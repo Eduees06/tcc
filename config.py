@@ -1,0 +1,10 @@
+# Caminho para os assets
+CAMINHO_ASSETS = "D:/jogo/assets/images"
+
+# Configurações da tela
+LARGURA_TELA = 1920
+ALTURA_TELA = 1080
+
+VELOCIDADE_PERSONAGEM = int(4 * LARGURA_TELA / 1280)
+VELOCIDADE_CORRER = int(8 * LARGURA_TELA / 1280)
+TAMANHO_PERSONAGEM = int(150 * LARGURA_TELA / 1280) 
