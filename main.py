@@ -6,94 +6,75 @@ from fase1 import fase1
 pygame.init()
 
 # Configurar a tela
-largura, altura = 1024, 1024  # Tamanho da tela
+largura, altura = 1920, 1080  # Tamanho da tela
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("Cyber Defender")
 
 relógio = pygame.time.Clock()
 
+# Cores
 BRANCO = (255, 255, 255)
 PRETO = (0, 0, 0)
 
+# Fontes
 fonte = pygame.font.SysFont(None, 55)
 fonte_pequena = pygame.font.SysFont(None, 35)
 
-# Carregar a imagem de fundo do monitor
+# Caminho dos assets
 caminho_assets = "D:/jogo/assets/images"
-background = pygame.image.load(os.path.join(caminho_assets, "background.png")).convert()
-background = pygame.transform.scale(background, (largura, altura))
 
-# Carregar imagens dos botões
-botao_play = pygame.image.load(os.path.join(caminho_assets, "botao_play.png")).convert_alpha()
-botao_play = pygame.transform.scale(botao_play, (300, 300))
-botao_play_sel = pygame.image.load(os.path.join(caminho_assets, "botao_play_selecionado.png")).convert_alpha()
-botao_play_sel = pygame.transform.scale(botao_play_sel, (300, 300))
+# Função para carregar imagens e máscaras
+def carregar_imagem(nome, tamanho):
+    imagem = pygame.image.load(os.path.join(caminho_assets, nome)).convert_alpha()
+    imagem = pygame.transform.scale(imagem, tamanho)
+    return imagem, pygame.mask.from_surface(imagem)
 
-botao_instrucao = pygame.image.load(os.path.join(caminho_assets, "botao_instrucao.png")).convert_alpha()
-botao_instrucao = pygame.transform.scale(botao_instrucao, (300, 300))
-botao_instrucao_sel = pygame.image.load(os.path.join(caminho_assets, "botao_instrucao_selecionado.png")).convert_alpha()
-botao_instrucao_sel = pygame.transform.scale(botao_instrucao_sel, (300, 300))
+# Carregar imagens de fundo e botões
+background, _ = carregar_imagem("background.png", (largura, altura))
+botao_play, mascara_play = carregar_imagem("botao_play.png", (300, 300))
+botao_play_sel, mascara_play_sel = carregar_imagem("botao_play_selecionado.png", (300, 300))
+botao_instrucao, mascara_instrucao = carregar_imagem("botao_instrucao.png", (300, 300))
+botao_instrucao_sel, mascara_instrucao_sel = carregar_imagem("botao_instrucao_selecionado.png", (300, 300))
+botao_sair, mascara_sair = carregar_imagem("botao_sair.png", (300, 300))
+botao_sair_sel, mascara_sair_sel = carregar_imagem("botao_sair_selecionado.png", (300, 300))
+botao_voltar, mascara_voltar = carregar_imagem("botao_voltar.png", (300, 300))
+botao_voltar_sel, mascara_voltar_sel = carregar_imagem("botao_voltar_selecionado.png", (300, 300))
 
-botao_sair = pygame.image.load(os.path.join(caminho_assets, "botao_sair.png")).convert_alpha()
-botao_sair = pygame.transform.scale(botao_sair, (300, 300))
-botao_sair_sel = pygame.image.load(os.path.join(caminho_assets, "botao_sair_selecionado.png")).convert_alpha()
-botao_sair_sel = pygame.transform.scale(botao_sair_sel, (300, 300))
-
-# Carregar imagens do botão voltar e redimensionar
-botao_voltar = pygame.image.load(os.path.join(caminho_assets, "botao_voltar.png")).convert_alpha()
-botao_voltar = pygame.transform.scale(botao_voltar, (300, 300))
-botao_voltar_sel = pygame.image.load(os.path.join(caminho_assets, "botao_voltar_selecionado.png")).convert_alpha()
-botao_voltar_sel = pygame.transform.scale(botao_voltar_sel, (300, 300))
-
-# Criar máscaras para os botões
-mascara_play = pygame.mask.from_surface(botao_play)
-mascara_play_sel = pygame.mask.from_surface(botao_play_sel)
-mascara_instrucao = pygame.mask.from_surface(botao_instrucao)
-mascara_instrucao_sel = pygame.mask.from_surface(botao_instrucao_sel)
-mascara_sair = pygame.mask.from_surface(botao_sair)
-mascara_sair_sel = pygame.mask.from_surface(botao_sair_sel)
-mascara_voltar = pygame.mask.from_surface(botao_voltar)
-mascara_voltar_sel = pygame.mask.from_surface(botao_voltar_sel)
-
-# Coordenadas do monitor na imagem original (100x100 pixels)
+# Coordenadas e proporções do monitor
 monitor_x_original = 5
 monitor_y_original = 27
 monitor_largura_original = 91
 monitor_altura_original = 52
 
-# Proporções para o monitor na tela de 1024x1024
-proporcao_x = largura / 100  # Proporção de redimensionamento em x
-proporcao_y = altura / 100  # Proporção de redimensionamento em y
+proporcao_x = largura / 100
+proporcao_y = altura / 100
 
-# Coordenadas do monitor na tela de 1024x1024
 monitor_x = int(monitor_x_original * proporcao_x)
 monitor_y = int(monitor_y_original * proporcao_y)
 monitor_largura = int(monitor_largura_original * proporcao_x)
 monitor_altura = int(monitor_altura_original * proporcao_y)
 
-# Função para desenhar texto na tela centralizado
+# Função para desenhar texto centralizado
 def desenhar_texto_centralizado(texto, fonte, cor, superficie, x, y):
     textoobj = fonte.render(texto, True, cor)
     textorect = textoobj.get_rect(center=(x, y))
     superficie.blit(textoobj, textorect)
 
-# Função para criar botões dentro da área do monitor
+# Função para criar botões
 def criar_botao(imagem, imagem_sel, mascara, mascara_sel, x_rel, y_rel, acao=None):
     mouse = pygame.mouse.get_pos()
     clique = pygame.mouse.get_pressed()
-    
-    # Ajustar coordenadas para a área do monitor na tela
-    x_absoluto = monitor_x + (monitor_largura - 300) // 2 + x_rel - 10  # Ajuste de 1 pixel para a esquerda
-    y_absoluto = monitor_y + (monitor_altura - 300) // 2 + y_rel 
-    
-    # Desenhar o botão na tela
+
+    x_absoluto = monitor_x + (monitor_largura - 300) // 2 + x_rel - 10
+    y_absoluto = monitor_y + (monitor_altura - 300) // 2 + y_rel
+
     if mascara.overlap(pygame.mask.Mask((1, 1), fill=True), (mouse[0] - x_absoluto, mouse[1] - y_absoluto)):
         tela.blit(imagem_sel, (x_absoluto, y_absoluto))
         if clique[0] == 1 and acao is not None:
             return acao
     else:
         tela.blit(imagem, (x_absoluto, y_absoluto))
-    
+
     return None
 
 # Tela de Instruções
@@ -103,12 +84,11 @@ def instrucoes():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()
 
         tela.fill(PRETO)
-        tela.blit(background, (0, 0))  # Desenha o monitor como plano de fundo
+        tela.blit(background, (0, 0))
 
-        desenhar_texto_centralizado("Instruções", fonte, BRANCO, tela, monitor_x + monitor_largura // 2, monitor_y + 50)  # Centraliza o título
+        desenhar_texto_centralizado("Instruções", fonte, BRANCO, tela, monitor_x + monitor_largura // 2, monitor_y + 50)
         
         texto_instrucoes = (
             "Bem-vindo ao 'Cyber defender', um jogo educativo onde você",
@@ -120,12 +100,12 @@ def instrucoes():
             "infectado."
         )
 
-        y_offset = monitor_y + 150  # Offset inicial
+        y_offset = monitor_y + 150
         for linha in texto_instrucoes:
             desenhar_texto_centralizado(linha, fonte_pequena, BRANCO, tela, largura // 2, y_offset)
             y_offset += 30
 
-        if criar_botao(botao_voltar, botao_voltar_sel, mascara_voltar, mascara_voltar_sel, 0, 150, "voltar"):  # Usar o botão voltar
+        if criar_botao(botao_voltar, botao_voltar_sel, mascara_voltar, mascara_voltar_sel, 0, 150, "voltar"):
             instrucoes_rodando = False
 
         pygame.display.flip()
@@ -140,22 +120,22 @@ def tela_inicial():
                 sys.exit()
 
         tela.fill(PRETO)
-        tela.blit(background, (0, 0))  # Desenha o monitor como plano de fundo
+        tela.blit(background, (0, 0))
 
-        desenhar_texto_centralizado("Menu Iniciar", fonte, BRANCO, tela, largura // 2, monitor_y + 50)  # Centraliza o título
+        desenhar_texto_centralizado("Menu Iniciar", fonte, BRANCO, tela, largura // 2, monitor_y + 50)
         
-        if criar_botao(botao_play, botao_play_sel, mascara_play, mascara_play_sel, 0, -100, "jogar"):  # Ajuste na posição do botão "Jogar"
-            fase1()  # Chamar a fase 1 quando clicar em jogar
+        if criar_botao(botao_play, botao_play_sel, mascara_play, mascara_play_sel, 0, -100, "jogar"):
+            fase1()
         
-        if criar_botao(botao_instrucao, botao_instrucao_sel, mascara_instrucao, mascara_instrucao_sel, 0, 50, "instrucoes"):  # Ajuste na posição do botão "Instruções"
+        if criar_botao(botao_instrucao, botao_instrucao_sel, mascara_instrucao, mascara_instrucao_sel, 0, 50, "instrucoes"):
             instrucoes()
         
-        if criar_botao(botao_sair, botao_sair_sel, mascara_sair, mascara_sair_sel, 0, 200, "sair"):  # Ajuste na posição do botão "Sair"
+        if criar_botao(botao_sair, botao_sair_sel, mascara_sair, mascara_sair_sel, 0, 200, "sair"):
             pygame.quit()
             sys.exit()
 
         pygame.display.flip()
-        relógio.tick(15)
+        relógio.tick(30)
 
 # Iniciar a tela inicial
 tela_inicial()
