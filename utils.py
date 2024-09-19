@@ -29,7 +29,9 @@ def carregar_imagens(caminho_assets):
     computador2_original = pygame.image.load(os.path.join(caminho_assets, "computador2.png")).convert_alpha()
     gato_original = pygame.image.load(os.path.join(caminho_assets, "gato.png")).convert_alpha()
     cachorro_original = pygame.image.load(os.path.join(caminho_assets, "cachorro.png")).convert_alpha()
-    divisoria = pygame.image.load(os.path.join(caminho_assets, 'divisoria.png')).convert_alpha()
+    relogio_original = pygame.image.load(os.path.join(caminho_assets, 'relogio.png')).convert_alpha()
+    vida_original = pygame.image.load(os.path.join(caminho_assets, 'vida5-5.png')).convert_alpha()
+    moeda_original = pygame.image.load(os.path.join(caminho_assets, 'moeda.png')).convert_alpha()
     
     # Calcular escala com base na largura da tela
     escala = calcular_escala(LARGURA_TELA)
@@ -50,8 +52,9 @@ def carregar_imagens(caminho_assets):
     gato = pygame.transform.scale(gato_original, (escala * 0.5, escala * 0.5))
     gato = pygame.transform.flip(gato, True, False)
     cachorro = pygame.transform.scale(cachorro_original, (escala * 0.7, escala * 0.5))
-
-
+    relogio_figura = pygame.transform.scale(relogio_original, (escala * 0.5, escala * 0.3))
+    vida = pygame.transform.scale(vida_original, (escala * 4.5, escala * 4.5))
+    moeda = pygame.transform.scale(moeda_original, (escala * 2.3, escala * 2.3))
     # Definir os rects
     rects = {
         "chao": chao.get_rect(),
@@ -67,8 +70,7 @@ def carregar_imagens(caminho_assets):
         "computador1": computador1.get_rect(),
         "computador2": computador2.get_rect(),
         "gato": gato.get_rect(),
-        "cachorro": cachorro.get_rect(),
-        "divisoria": divisoria.get_rect(),
+        "cachorro": cachorro.get_rect()
     }
     
     # Carregar animações de andar e correr
@@ -81,12 +83,32 @@ def carregar_imagens(caminho_assets):
         pygame.transform.scale(pygame.image.load(os.path.join(caminho_assets, f"personagem_correndo{i}.png")).convert_alpha(), (TAMANHO_PERSONAGEM, TAMANHO_PERSONAGEM))
         for i in range(1, 9)
     ]
+    
+    animacao_figurante1 = [
+        pygame.transform.scale(pygame.image.load(os.path.join(caminho_assets, f"figurante1esperando{i}.png")).convert_alpha(), (TAMANHO_PERSONAGEM, TAMANHO_PERSONAGEM))
+        for i in range(1, 7) 
+    ]
+    
+    animacao_figurante2 = [
+        pygame.transform.scale(pygame.image.load(os.path.join(caminho_assets, f"figurante2esperando{i}.png")).convert_alpha(), (TAMANHO_PERSONAGEM, TAMANHO_PERSONAGEM))
+        for i in range(1, 7) 
+    ]
+    
+    animacao_figurante3 = [
+        pygame.transform.scale(pygame.image.load(os.path.join(caminho_assets, f"figurante3esperando{i}.png")).convert_alpha(), (TAMANHO_PERSONAGEM, TAMANHO_PERSONAGEM))
+        for i in range(1, 7) 
+    ]
+        
+    animacao_figurante4 = [
+        pygame.transform.scale(pygame.image.load(os.path.join(caminho_assets, f"figurante4esperando{i}.png")).convert_alpha(), (TAMANHO_PERSONAGEM, TAMANHO_PERSONAGEM))
+        for i in range(1, 7) 
+    ]
 
     # Carregar imagem do céu
     ceu_original = pygame.image.load(os.path.join(caminho_assets, "ceu.png")).convert()
     ceu = pygame.transform.scale(ceu_original, (LARGURA_TELA, int(ALTURA_TELA * 0.1)))
     
-    return (chao, parede, personagem_parado, animacao_andar, animacao_correr, ceu, janela, porta, maquina, maquina2, mesa, mesa_grande, computador1, computador2, gato, cachorro, divisoria, rects)
+    return (chao, parede, personagem_parado, animacao_andar, animacao_correr, ceu, janela, porta, maquina, maquina2, mesa, mesa_grande, computador1, computador2, gato, cachorro, relogio_figura, rects, animacao_figurante1, animacao_figurante2, animacao_figurante3, animacao_figurante4, vida, moeda)
 
 def desenhar_repetido(tela, imagem, largura, altura, x_inicial=0, y_inicial=0):
     for x in range(x_inicial, x_inicial + largura, imagem.get_width()):
@@ -124,7 +146,7 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
         # Criar retângulos dos objetos para verificar colisão
         objetos = [
             'janela', 'janela2', 'porta', 'porta2', 
-            'maquina', 'maquina2', 'mesa_grande', 'gato', 'cachorro'
+            'maquina', 'maquina2', 'mesa_grande', 'gato', 'cachorro', 'figurante1', 'figurante2', 'figurante3', 'figurante4'
         ]
         
         # Verificar colisão com objetos fixos
@@ -251,6 +273,15 @@ def definir_posicoes_objetos(altura_chao, rects):
     espaco_horizontal = 200
     espaco_vertical = 200
 
+    x_relogio = x_porta1 - 25
+    y_relogio = y_porta1 - 40
+    
+    x_vida = - 10
+    y_vida = - 100
+    
+    x_moeda = - 65
+    y_moeda = - 10
+    
     mesas = [
         # Bloco 1 (Canto Esquerdo)
         (LARGURA_TELA // 6 - espaco_horizontal - 75 - ajuste_horizontal, ALTURA_TELA - altura_chao + espaco_vertical),
@@ -312,14 +343,14 @@ def definir_posicoes_objetos(altura_chao, rects):
         rects[f'mesa{i}'] = rect_mesa
 
     return (x_janela1, y_janela1, x_janela2, y_janela2, x_porta1, y_porta1, x_porta2, y_porta2,
-            x_maquina, y_maquina, x_maquina2, y_maquina2, x_mesa_grande, y_mesa_grande, mesas, computadores, x_gato, y_gato, x_cachorro, y_cachorro), rects
+            x_maquina, y_maquina, x_maquina2, y_maquina2, x_mesa_grande, y_mesa_grande, mesas, computadores, x_gato, y_gato, x_cachorro, y_cachorro, x_relogio, y_relogio, x_vida, y_vida, x_moeda, y_moeda), rects
 
 
-def desenhar_cenario(tela, chao, parede, ceu, janela, porta, porta2, maquina, maquina2, mesa, mesa_grande, computador1, computador2, gato, cachorro, posicoes, altura_chao):
+def desenhar_cenario(tela, chao, parede, ceu, janela, porta, porta2, maquina, maquina2, mesa, mesa_grande, computador1, computador2, gato, cachorro, posicoes, altura_chao, relogio_figura, vida, moeda):
     
     
     (x_janela1, y_janela1, x_janela2, y_janela2, x_porta1, y_porta1, x_porta2, y_porta2,
-     x_maquina, y_maquina, x_maquina2, y_maquina2, x_mesa_grande, y_mesa_grande, mesas, computadores, x_gato, y_gato, x_cachorro, y_cachorro) = posicoes
+     x_maquina, y_maquina, x_maquina2, y_maquina2, x_mesa_grande, y_mesa_grande, mesas, computadores, x_gato, y_gato, x_cachorro, y_cachorro, x_relogio, y_relogio, x_vida, y_vida, x_moeda, y_moeda) = posicoes
 
     tela.fill((0, 0, 0))
 
@@ -327,6 +358,8 @@ def desenhar_cenario(tela, chao, parede, ceu, janela, porta, porta2, maquina, ma
     desenhar_repetido(tela, parede, LARGURA_TELA, int(ALTURA_TELA * 0.2), 0, ALTURA_TELA - altura_chao - int(ALTURA_TELA * 0.2))
     tela.blit(ceu, (0, 0))
 
+    tela.blit(relogio_figura, (x_relogio, y_relogio))
+    
     tela.blit(janela, (x_janela1, y_janela1))
     tela.blit(janela, (x_janela2, y_janela2))
 
@@ -346,7 +379,9 @@ def desenhar_cenario(tela, chao, parede, ceu, janela, porta, porta2, maquina, ma
     tela.blit(cachorro, (x_cachorro, y_cachorro))
     
     desenhar_borda_horizontal(tela, (100, 100, 100), LARGURA_TELA, 5, ALTURA_TELA - altura_chao - int(ALTURA_TELA * 0.2))
-
+    
+    tela.blit(vida, (x_vida, y_vida))
+    tela.blit(moeda, (x_moeda, y_moeda))
 def atualizar_animacao(teclas_pressionadas, frame_atual, animacao_andar, animacao_correr, personagem_parado):
     if any([teclas_pressionadas[pygame.K_UP], teclas_pressionadas[pygame.K_DOWN], teclas_pressionadas[pygame.K_LEFT], teclas_pressionadas[pygame.K_RIGHT], teclas_pressionadas[pygame.K_w], teclas_pressionadas[pygame.K_s], teclas_pressionadas[pygame.K_a], teclas_pressionadas[pygame.K_d]]):
         if teclas_pressionadas[pygame.K_LSHIFT] or teclas_pressionadas[pygame.K_RSHIFT]:
