@@ -1,0 +1,21 @@
+Conversar com o chefe - ele passa as instruções
+Analisar os emails (phishing)
+depois de analisar 10 emails, volte a falar com o chefe
+
+EMAILS VÁLIDOS
+
+contato@techsolucoes.com
+suporte@inovaindustrias.com
+vendas@digitalsafe.com
+financeiro@maxcorporate.com
+comercial@alphatechnologia.com
+marketing@globalvision.com
+rh@novaimpact.com
+info@securebytes.com
+parcerias@nextgenit.com
+administracao@cyberguardians.com
+suporte@cloudsystems.com
+financeiro@redshieldtech.com
+servicos@smartbusiness.com
+info@futureconnect.com
+consultoria@securewave.com
