@@ -3,7 +3,6 @@ import os
 from config import LARGURA_TELA, ALTURA_TELA, TAMANHO_PERSONAGEM
 import sys
 from personagem import *
-import random
 
 pygame.init()
 
@@ -11,7 +10,7 @@ pygame.init()
 caminho_assets = "D:/jogo/assets/images"
 CAMINHO_AUDIO = "D:\\jogo\\audios\\"
 
-fonte_personalizada = pygame.font.Font('D:/jogo/fontes/Early GameBoy.ttf', 50)
+fonte_personalizada = pygame.font.Font('D:/jogo/fontes/Early GameBoy.ttf', 35)
 
 def calcular_escala(largura_tela):
     if largura_tela == 1280:
@@ -37,16 +36,12 @@ def carregar_imagens(caminho_assets):
     gato_original = pygame.image.load(os.path.join(caminho_assets, "gato.png")).convert_alpha()
     cachorro_original = pygame.image.load(os.path.join(caminho_assets, "cachorro.png")).convert_alpha()
     relogio_original = pygame.image.load(os.path.join(caminho_assets, 'relogio.png')).convert_alpha()
-    # Carregar as imagens de vida
-    vida_imgs = [
-        pygame.image.load(os.path.join(caminho_assets, f'vida{i}-5.png')).convert_alpha() for i in range(5, -1, -1)
-    ]
-    moeda_original = pygame.image.load(os.path.join(caminho_assets, 'moeda.png')).convert_alpha()
     chefe_original = pygame.image.load(os.path.join(caminho_assets, 'chefe.png')).convert_alpha()
     escrivaninha_original = pygame.image.load(os.path.join(caminho_assets, 'escrivaninha.png')).convert_alpha()
     caixa_dialogo_original = pygame.image.load(os.path.join(caminho_assets, 'caixadialogo.png')).convert_alpha()
     emails = pygame.image.load(os.path.join(caminho_assets, 'emails.png')).convert_alpha()
-    
+    som_original = pygame.image.load(os.path.join(caminho_assets, 'som.png')).convert_alpha()
+    som_mutado_original = pygame.image.load(os.path.join(caminho_assets, 'som_mutado.png')).convert_alpha()
     # Calcular escala com base na largura da tela
     escala = calcular_escala(LARGURA_TELA)
     
@@ -67,12 +62,12 @@ def carregar_imagens(caminho_assets):
     gato = pygame.transform.flip(gato, True, False)
     cachorro = pygame.transform.scale(cachorro_original, (escala * 0.7, escala * 0.5))
     relogio_figura = pygame.transform.scale(relogio_original, (escala * 0.5, escala * 0.3))
-    # Escalar as imagens de vida
-    vida = [pygame.transform.scale(img, (escala * 4.5, escala * 4.5)) for img in vida_imgs]
-    moeda = pygame.transform.scale(moeda_original, (escala * 2.3, escala * 2.3))
     chefe = pygame.transform.scale(chefe_original, (escala * 1.7, escala * 1.7))
     escrivaninha = pygame.transform.scale(escrivaninha_original, (escala * 1.7, escala * 1.7))
     caixa_dialogo = pygame.transform.scale(caixa_dialogo_original, (escala * 15.0, escala * 15.0))
+    som = pygame.transform.scale(som_original, (som_original.get_width() // 5, som_original.get_height() // 5))
+    som_mutado = pygame.transform.scale(som_mutado_original, (som_mutado_original.get_width() // 5, som_mutado_original.get_height() // 5))
+    
     # Definir os rects
     rects = {
         "chao": chao.get_rect(),
@@ -90,7 +85,8 @@ def carregar_imagens(caminho_assets):
         "gato": gato.get_rect(),
         "cachorro": cachorro.get_rect(),
         "chefe" : chefe.get_rect(),
-        'escrivaninha' : escrivaninha.get_rect()
+        'escrivaninha' : escrivaninha.get_rect(),
+        'som' : som.get_rect()
     }
     
     # Carregar animações de andar e correr
@@ -129,8 +125,51 @@ def carregar_imagens(caminho_assets):
     ceu = pygame.transform.scale(ceu_original, (LARGURA_TELA, int(ALTURA_TELA * 0.1)))
     
     return (chao, parede, personagem_parado, animacao_andar, animacao_correr, ceu, janela, porta, maquina, maquina2, mesa, mesa_grande, computador1, computador2, gato, cachorro,
-            relogio_figura, rects, animacao_figurante1, animacao_figurante2, animacao_figurante3, animacao_figurante4, vida, moeda, chefe, escrivaninha, caixa_dialogo, emails)
+            relogio_figura, rects, animacao_figurante1, animacao_figurante2, animacao_figurante3, animacao_figurante4, chefe, escrivaninha, caixa_dialogo, emails, som, som_mutado)
+   
+def carregar_assets_menu():
+    escala = calcular_escala(LARGURA_TELA)
+    menu = pygame.image.load(os.path.join(caminho_assets, 'menu.png')).convert_alpha()
+    largura_menu, altura_menu = 502, 128
+    menu = pygame.transform.scale(menu, (largura_menu, altura_menu))
+    # Carregar as imagens de vida
+    vida_imgs = [
+        pygame.image.load(os.path.join(caminho_assets, f'vida{i}-5.png')).convert_alpha() for i in range(5, -1, -1)
+    ]
+    moeda_original = pygame.image.load(os.path.join(caminho_assets, 'moeda.png')).convert_alpha()
+    # Carregar as imagens de vida, se necessário, escalando de acordo com a tela
+    vida_imgs = [pygame.transform.scale(img, (escala * 4.5, escala * 4.5)) for img in vida_imgs]
+    
+    # Escalar a imagem da moeda
+    moeda_img = pygame.transform.scale(moeda_original, (escala * 2.3, escala * 2.3))
+    
+    return(menu, vida_imgs, moeda_img)
 
+def carregar_menu(tela, personagem_atributos, fonte):
+    menu, vida_imgs, moeda_img = carregar_assets_menu()
+    
+    # Posições do menu
+    x_menu = - 10  # Ajuste conforme necessário
+    y_menu = - 10 # Ajuste conforme necessário
+    
+    # Desenhar o menu na tela
+    tela.blit(menu, (x_menu, y_menu))
+    
+    # Desenhar a vida atual sobre o menu
+    x_vida = x_menu + 60
+    y_vida = y_menu - 90
+    vida_index = max(0, min(5, 5 - personagem_atributos.vidas))  # Índice da vida atual
+    tela.blit(vida_imgs[vida_index], (x_vida, y_vida))
+
+    # Desenhar a quantidade de moedas sobre o menu
+    x_moeda = x_menu + 240  # Ajustar conforme necessário
+    y_moeda = y_vida + 40
+    tela.blit(moeda_img, (x_moeda, y_moeda))
+
+    # Desenhar o texto das moedas
+    texto_moedas = fonte.render(str(personagem_atributos.dinheiro), True, (0, 0, 0))  # Texto em preto
+    tela.blit(texto_moedas, (x_moeda + moeda_img.get_width() - 85, y_moeda + 95))
+    
 def desenhar_repetido(tela, imagem, largura, altura, x_inicial=0, y_inicial=0):
     for x in range(x_inicial, x_inicial + largura, imagem.get_width()):
         for y in range(y_inicial, y_inicial + altura, imagem.get_height()):
@@ -173,139 +212,12 @@ def pausar_jogo_imagem(tela, img):
         # Desenha a imagem dos emails no canto superior esquerdo sem limpar a tela
         tela.blit(img, (1375, 10))  # Desenha a imagem na posição desejada
         pygame.display.flip()  # Atualiza a tela
-
-def abrir_tela_nova(tela, personagem):
-    largura_nova, altura_nova = 1000, 1000
-
-    # Carregar emails como tuplas (imagem, tipo)
-    emails = []
-    for i in range(1, 6):
-        emails.append((pygame.image.load(os.path.join("D:/jogo/assets/images", f"emailfalso{i}.png")).convert_alpha(), "falso"))
-        emails.append((pygame.image.load(os.path.join("D:/jogo/assets/images", f"emailverdadeiro{i}.png")).convert_alpha(), "verdadeiro"))
-
-    # Embaralhar a lista de emails para exibir em ordem aleatória
-    random.shuffle(emails)
-
-    # Carregar o background
-    background = pygame.image.load(os.path.join(caminho_assets, "background.png")).convert_alpha()
-    background = pygame.transform.scale(background, (largura_nova, altura_nova))
-    
-    nova_tela = pygame.Surface((largura_nova, altura_nova))
-    nova_tela.blit(background, (0, 0))
-
-    pos_x = (tela.get_width() - largura_nova) // 2
-    pos_y = (tela.get_height() - altura_nova) // 2
-
-    # Definir retângulo do monitor
-    monitor_rect = pygame.Rect(pos_x + 40, pos_y + 260, largura_nova // 1.085, altura_nova // 1.88)
-
-    # Iniciar a lista de emails a serem exibidos (sem repetição, mas agora aleatórios)
-    email_index = 0
-    total_emails = len(emails)
-    email_atual, email_tipo = emails[email_index]
-    
-    # Redimensionar o email para caber no retângulo
-    email_width, email_height = monitor_rect.width, monitor_rect.height
-    email_atual = pygame.transform.scale(email_atual, (email_width, email_height))
-
-    mostrando_emails = False
-    mensagem_mostrada = True  # Mostrar a mensagem inicial "aperte E para avançar"
-    esperando = True
-
-    # Definir dimensões e posições dos botões
-    botao_largura, botao_altura = 200, 50
-    confirmar_rect = pygame.Rect(
-        monitor_rect.centerx - botao_largura - 20,  # Espaçamento entre os botões
-        monitor_rect.bottom - botao_altura - 20,   # Perto da borda inferior
-        botao_largura,
-        botao_altura
-    )
-    rejeitar_rect = pygame.Rect(
-        monitor_rect.centerx + 20,
-        monitor_rect.bottom - botao_altura - 20,
-        botao_largura,
-        botao_altura
-    )
-    while esperando:
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_ESCAPE:
-                    esperando = False
-                if evento.key == pygame.K_e and not mostrando_emails:  # Avançar emails ao pressionar 'E'
-                    mostrando_emails = True
-                    mensagem_mostrada = False  # Oculta a mensagem inicial
-
-            if evento.type == pygame.MOUSEBUTTONDOWN:
-                if evento.button == 1 and mostrando_emails:  # Botão esquerdo do mouse
-                    if confirmar_rect.collidepoint(evento.pos):
-                        if email_tipo == "verdadeiro":
-                            personagem.adicionar_dinheiro(10)
-                        else:
-                            personagem.perder_vida()
-                        email_index += 1  # Próximo email
-                    elif rejeitar_rect.collidepoint(evento.pos):
-                        if email_tipo == "falso":
-                            personagem.adicionar_dinheiro(10)
-                        else:
-                            personagem.perder_vida()
-                        email_index += 1  # Próximo email
-
-                    if email_index < total_emails:
-                        email_atual, email_tipo = emails[email_index]  # Carregar novo email
-                        email_atual = pygame.transform.scale(email_atual, (email_width, email_height))
-                    else:
-                        mostrando_emails = False  # Todos os emails foram processados
-
-        # Atualizar a tela
-        tela.blit(nova_tela, (pos_x, pos_y))
-        pygame.draw.rect(tela, (255, 0, 0), monitor_rect, 2)  # Contorno do monitor
-
-        # Exibir o email se estiver mostrando e se houver emails a exibir
-        if mostrando_emails and email_index < total_emails:
-            tela.blit(email_atual, (monitor_rect.x, monitor_rect.y))  # Posição do email
-
-            # Desenhar botões
-            pygame.draw.rect(tela, (0, 255, 0), confirmar_rect)  # Botão verde
-            pygame.draw.rect(tela, (255, 0, 0), rejeitar_rect)  # Botão vermelho
-
-            # Desenhar texto nos botões
-            fonte = pygame.font.SysFont(None, 36)
-            texto_confirmar = fonte.render("Confirmar Email", True, (0, 0, 0))
-            texto_rejeitar = fonte.render("Rejeitar Email", True, (0, 0, 0))
-            # Centralizar o texto nos botões
-            tela.blit(texto_confirmar, (confirmar_rect.x + (confirmar_rect.width - texto_confirmar.get_width()) // 2, confirmar_rect.y + (confirmar_rect.height - texto_confirmar.get_height()) // 2))
-            tela.blit(texto_rejeitar, (rejeitar_rect.x + (rejeitar_rect.width - texto_rejeitar.get_width()) // 2, rejeitar_rect.y + (rejeitar_rect.height - texto_rejeitar.get_height()) // 2))
         
-        # Exibir a mensagem inicial
-        elif mensagem_mostrada:
-            fonte = pygame.font.SysFont(None, 36)
-            mensagem = fonte.render("Aperte E para avançar os emails", True, (255, 255, 255))
-            mensagem_rect = mensagem.get_rect(center=monitor_rect.center)
-            tela.blit(mensagem, mensagem_rect)
-
-        if email_index >= total_emails and not mostrando_emails:
-            fonte = pygame.font.SysFont(None, 36)
-            mensagem_fim = fonte.render("Vá falar com seu chefe", True, (255, 255, 255))
-            mensagem_fim_rect = mensagem_fim.get_rect(center=monitor_rect.center)
-            tela.blit(mensagem_fim, mensagem_fim_rect)
-
-            pygame.display.flip()  # Atualiza a tela para mostrar a mensagem
-            pygame.time.delay(1000)  # Espera por 1 segundos (1000 milissegundos)
-
-            return 
-        pygame.display.flip()
-        pygame.time.delay(100)
-        
-
-                 
 def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area_chao_horizontalmente_expandida, velocidade_correr, posicoes, rects, tela, personagem):
     novo_x, novo_y = x, y
     teclas_pressionadas = pygame.key.get_pressed()
     mesas = posicoes[14]
-    
+    iniciar_minigame = False
     if teclas[pygame.K_LSHIFT] or teclas[pygame.K_RSHIFT]:
         velocidade = velocidade_correr
 
@@ -347,9 +259,9 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
                     if obj.startswith('porta') and teclas_pressionadas[pygame.K_e]:
                         resposta = mostrar_caixa_dialogo(tela)
                         if resposta == 'sim':
-                            return None, None, None, True, False
+                            return None, None, None, True, False, iniciar_minigame
                     if obj in dialogos and teclas_pressionadas[pygame.K_e]:
-                        return x, y, direcao, False, dialogos[obj]
+                        return x, y, direcao, False, dialogos[obj],  iniciar_minigame
 
                     if obj == 'escrivaninha' and teclas_pressionadas[pygame.K_e]:
                         if "emails" in personagem.objetos:
@@ -365,18 +277,18 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
                         else:
                             personagem.adicionar_objeto("petisco gato")
                             pausar_jogo_mensagem(tela, 'Você adquiriu o petisco para gato!')
-                        personagem.dinheiro -= 30
+                        personagem.remover_dinheiro(30)
 
                     if obj == 'cachorro' and teclas_pressionadas[pygame.K_e]:
                         if "petisco cachorro" in personagem.objetos and personagem.vidas < 5:
-                            personagem.vidas += 1
+                            personagem.ganhar_vida()
                             personagem.objetos.remove("petisco cachorro")
                             pygame.mixer.Sound(CAMINHO_AUDIO + "cachorro.wav").play()
                             pausar_jogo_mensagem(tela, 'Você ganhou 1 ponto de vida!')
 
                     if obj == 'mesa_grande' and teclas_pressionadas[pygame.K_e]:
                         if "petisco gato" in personagem.objetos and personagem.vidas < 5:
-                            personagem.vidas += 1
+                            personagem.ganhar_vida()
                             personagem.objetos.remove("petisco gato")
                             pygame.mixer.Sound(CAMINHO_AUDIO + "gato.mp3").play()
                             pausar_jogo_mensagem(tela, 'Você ganhou 1 ponto de vida!')
@@ -391,14 +303,15 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
         for i, rect_mesa in enumerate(retangulos_mesas):
             if rect_mesa.collidepoint(ponto):
                 if i == 5 and teclas_pressionadas[pygame.K_e]: 
-                    abrir_tela_nova(tela, personagem)
+                    iniciar_minigame = True
+                    return x, y, direcao, False, None, iniciar_minigame
                 colisao = True
                 break
         
         if not colisao:
             x, y = novo_x, novo_y
             
-    return x, y, direcao, False, None
+    return x, y, direcao, False, None, iniciar_minigame
 
 def mostrar_caixa_dialogo(screen):
     largura_tela, altura_tela = screen.get_size()
@@ -499,11 +412,8 @@ def definir_posicoes_objetos(altura_chao, rects):
     x_relogio = x_porta1 - 25
     y_relogio = y_porta1 - 40
     
-    x_vida = - 10
-    y_vida = - 120
-    
-    x_moeda = - 65
-    y_moeda = - 20
+    x_som = 1800
+    y_som = 20
     
     mesas = [
         # Bloco 1 (Canto Esquerdo)
@@ -570,7 +480,7 @@ def definir_posicoes_objetos(altura_chao, rects):
     rects['escrivaninha'].topleft = (x_escrivaninha + 30, y_escrivaninha)
     rects['escrivaninha'].height = rects['escrivaninha'].height // 1.3
     rects['escrivaninha'].width = rects['escrivaninha'].width // 1.5
-    
+    rects['som'].topleft = (x_som, y_som)
     # Criar e atualizar os retângulos das mesas e computadores
     retangulos_mesas = [pygame.Rect(mesa_x, mesa_y, rects['mesa'].width, rects['mesa'].height) for mesa_x, mesa_y in mesas]
 
@@ -580,14 +490,14 @@ def definir_posicoes_objetos(altura_chao, rects):
 
     return (x_janela1, y_janela1, x_janela2, y_janela2, x_porta1, y_porta1, x_porta2, y_porta2,
             x_maquina, y_maquina, x_maquina2, y_maquina2, x_mesa_grande, y_mesa_grande, mesas, computadores, x_gato, y_gato, 
-            x_cachorro, y_cachorro, x_relogio, y_relogio, x_vida, y_vida, x_moeda, y_moeda, x_chefe, y_chefe, x_escrivaninha, y_escrivaninha), rects
+            x_cachorro, y_cachorro, x_relogio, y_relogio, x_chefe, y_chefe, x_escrivaninha, y_escrivaninha, x_som, y_som), rects
 
 def desenhar_cenario(tela, chao, parede, ceu, janela, porta, porta2, maquina, maquina2, mesa, mesa_grande, computador1,
-                     computador2, gato, cachorro, posicoes, altura_chao, relogio_figura, vida, vida_atual, moeda, moeda_atual, chefe, escrivaninha):
+                     computador2, gato, cachorro, posicoes, altura_chao, relogio_figura, chefe, escrivaninha, som, som_mutado, flag_som):
     
     (x_janela1, y_janela1, x_janela2, y_janela2, x_porta1, y_porta1, x_porta2, y_porta2,
      x_maquina, y_maquina, x_maquina2, y_maquina2, x_mesa_grande, y_mesa_grande, mesas, computadores, x_gato, y_gato, 
-     x_cachorro, y_cachorro, x_relogio, y_relogio, x_vida, y_vida, x_moeda, y_moeda, x_chefe, y_chefe, x_escrivaninha, y_escrivaninha) = posicoes
+     x_cachorro, y_cachorro, x_relogio, y_relogio, x_chefe, y_chefe, x_escrivaninha, y_escrivaninha, x_som, y_som) = posicoes
 
     # Limpar a tela com uma cor de fundo (preto)
     tela.fill((0, 0, 0))
@@ -606,6 +516,11 @@ def desenhar_cenario(tela, chao, parede, ceu, janela, porta, porta2, maquina, ma
     tela.blit(maquina, (x_maquina, y_maquina))
     tela.blit(maquina2, (x_maquina2, y_maquina2))
 
+    if flag_som:
+        tela.blit(som, (x_som, y_som))
+    else:
+        tela.blit(som_mutado, (x_som, y_som))
+        
     # Desenhar as mesas e os computadores
     for i, (x_mesa, y_mesa) in enumerate(mesas):
         tela.blit(mesa, (x_mesa, y_mesa))
@@ -622,24 +537,7 @@ def desenhar_cenario(tela, chao, parede, ceu, janela, porta, porta2, maquina, ma
 
     # Desenhar uma borda horizontal
     desenhar_borda_horizontal(tela, (100, 100, 100), LARGURA_TELA, 5, ALTURA_TELA - altura_chao - int(ALTURA_TELA * 0.2))
-
-    # Desenhar a vida atual
-    vida_index = max(0, min(5, vida_atual))  # Inverte o índice
-    tela.blit(vida[vida_index], (x_vida, y_vida))
-
-    # Desenhar a moeda e o número de moedas ao lado
-    tela.blit(moeda, (x_moeda, y_moeda))
     
-    # Ajustar a posição do número de moedas com base na largura da imagem da moeda
-    largura_moeda = moeda.get_width()  # Obter a largura da imagem da moeda
-    texto_moedas = fonte_personalizada.render((str(moeda_atual)), True, (0, 0, 0)) # Texto em branco
-    # Posiciona o texto à direita da moeda com um pequeno espaçamento
-    tela.blit(texto_moedas, (x_moeda + largura_moeda - 80, y_moeda + 90))
-    
-    # Desenhar a vida atual
-    vida_index = max(0, min(5, 5 - vida_atual))
-    tela.blit(vida[vida_index], (x_vida, y_vida))  # Usa a lista 'vida' em vez de 'vida_atual'
-    tela.blit(moeda, (x_moeda, y_moeda))
     
 def atualizar_animacao(teclas_pressionadas, frame_atual, animacao_andar, animacao_correr, personagem_parado):
     if any([teclas_pressionadas[pygame.K_UP], teclas_pressionadas[pygame.K_DOWN], teclas_pressionadas[pygame.K_LEFT], teclas_pressionadas[pygame.K_RIGHT], teclas_pressionadas[pygame.K_w], teclas_pressionadas[pygame.K_s], teclas_pressionadas[pygame.K_a], teclas_pressionadas[pygame.K_d]]):
