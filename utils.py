@@ -38,7 +38,7 @@ def carregar_imagens(caminho_assets):
     relogio_original = pygame.image.load(os.path.join(caminho_assets, 'relogio.png')).convert_alpha()
     chefe_original = pygame.image.load(os.path.join(caminho_assets, 'chefe.png')).convert_alpha()
     escrivaninha_original = pygame.image.load(os.path.join(caminho_assets, 'escrivaninha.png')).convert_alpha()
-    caixa_dialogo_original = pygame.image.load(os.path.join(caminho_assets, 'caixadialogo.png')).convert_alpha()
+    caixa_dialogo_original = pygame.image.load(os.path.join(caminho_assets, 'caixadialogo2.png')).convert_alpha()
     emails = pygame.image.load(os.path.join(caminho_assets, 'emails.png')).convert_alpha()
     som_original = pygame.image.load(os.path.join(caminho_assets, 'som.png')).convert_alpha()
     som_mutado_original = pygame.image.load(os.path.join(caminho_assets, 'som_mutado.png')).convert_alpha()
@@ -64,7 +64,7 @@ def carregar_imagens(caminho_assets):
     relogio_figura = pygame.transform.scale(relogio_original, (escala * 0.5, escala * 0.3))
     chefe = pygame.transform.scale(chefe_original, (escala * 1.7, escala * 1.7))
     escrivaninha = pygame.transform.scale(escrivaninha_original, (escala * 1.7, escala * 1.7))
-    caixa_dialogo = pygame.transform.scale(caixa_dialogo_original, (escala * 15.0, escala * 15.0))
+    caixa_dialogo = pygame.transform.scale(caixa_dialogo_original, (escala * 15.0, escala * 10.0))
     som = pygame.transform.scale(som_original, (som_original.get_width() // 5, som_original.get_height() // 5))
     som_mutado = pygame.transform.scale(som_mutado_original, (som_mutado_original.get_width() // 5, som_mutado_original.get_height() // 5))
     
@@ -149,8 +149,8 @@ def carregar_menu(tela, personagem_atributos, fonte):
     menu, vida_imgs, moeda_img = carregar_assets_menu()
     
     # Posições do menu
-    x_menu = - 10  # Ajuste conforme necessário
-    y_menu = - 10 # Ajuste conforme necessário
+    x_menu = -10  # Ajuste conforme necessário
+    y_menu = -10  # Ajuste conforme necessário
     
     # Desenhar o menu na tela
     tela.blit(menu, (x_menu, y_menu))
@@ -166,9 +166,16 @@ def carregar_menu(tela, personagem_atributos, fonte):
     y_moeda = y_vida + 40
     tela.blit(moeda_img, (x_moeda, y_moeda))
 
-    # Desenhar o texto das moedas
+    # Calcular a posição do texto das moedas
+    pos_texto_moedas = (x_moeda + moeda_img.get_width() - 85, y_moeda + 95)
+    largura_texto_moedas = fonte.size(str(personagem_atributos.dinheiro))[0]
+    altura_texto_moedas = fonte.get_height()  # Altura do texto
+
+    tela.fill((65, 166, 246), (pos_texto_moedas[0], pos_texto_moedas[1], largura_texto_moedas, altura_texto_moedas))  # Preenche com a cor especificada
+
+    # Desenhar o novo texto das moedas
     texto_moedas = fonte.render(str(personagem_atributos.dinheiro), True, (0, 0, 0))  # Texto em preto
-    tela.blit(texto_moedas, (x_moeda + moeda_img.get_width() - 85, y_moeda + 95))
+    tela.blit(texto_moedas, pos_texto_moedas)
     
 def desenhar_repetido(tela, imagem, largura, altura, x_inicial=0, y_inicial=0):
     for x in range(x_inicial, x_inicial + largura, imagem.get_width()):
@@ -179,7 +186,7 @@ def desenhar_borda_horizontal(tela, cor, largura_tela, largura, y_pos):
     pygame.draw.rect(tela, cor, (0, y_pos, largura_tela, largura))
 
 def pausar_jogo_mensagem(tela, mensagem):
-    fonte = pygame.font.SysFont('Arial', 25)  # Defina o tamanho da fonte conforme necessário
+    fonte = pygame.font.SysFont('Arial', 25)
     texto = fonte.render(mensagem, True, (0, 0, 0))  # Texto em vermelho
     texto_rect = texto.get_rect(center=(LARGURA_TELA // 2, (ALTURA_TELA // 2) - 400))  # Centraliza o texto na tela
 
@@ -255,7 +262,9 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
             if obj in rects:
                 obj_rect = rects[obj]
                 retangulo_objeto = pygame.Rect(obj_rect.x, obj_rect.y, obj_rect.width, obj_rect.height)
+                retangulo_expandido = retangulo_objeto.inflate(retangulo_objeto.width * 0.2, retangulo_objeto.height * 0.2)
                 if retangulo_objeto.collidepoint(ponto):
+                    colisao = True
                     if obj.startswith('porta') and teclas_pressionadas[pygame.K_e]:
                         resposta = mostrar_caixa_dialogo(tela)
                         if resposta == 'sim':
@@ -265,10 +274,10 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
 
                     if obj == 'escrivaninha' and teclas_pressionadas[pygame.K_e]:
                         if "emails" in personagem.objetos:
-                            pausar_jogo_mensagem(tela, 'Você já possui a lista de e-mails! Pressione "F" para visualizá-la.')
+                            pausar_jogo_mensagem(tela, 'Você já possui a lista de e-mails! Pressione "F" para visualizá-la quando estiver em seu computador.')
                         else:
                             personagem.adicionar_objeto("emails")
-                            pausar_jogo_mensagem(tela, 'Você adquiriu a lista de e-mails válidos! Pressione "F" para visualizá-la.')
+                            pausar_jogo_mensagem(tela, 'Você adquiriu a lista de e-mails válidos! Pressione "F" para visualizá-la quando estiver em seu computador.')
                     
                     if obj in ['maquina', 'maquina2'] and personagem.dinheiro >= 30 and teclas_pressionadas[pygame.K_e]:
                         if obj == 'maquina':
@@ -291,23 +300,66 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
                             personagem.ganhar_vida()
                             personagem.objetos.remove("petisco gato")
                             pygame.mixer.Sound(CAMINHO_AUDIO + "gato.mp3").play()
+                            pausar_jogo_mensagem(tela, 'Você ganhou 1 ponto de vida!')      
+                    break
+                
+                # Verifique se o personagem está próximo do objeto
+                elif retangulo_expandido.collidepoint(ponto):
+                    if obj.startswith('porta') and teclas_pressionadas[pygame.K_e]:
+                        resposta = mostrar_caixa_dialogo(tela)
+                        if resposta == 'sim':
+                            return None, None, None, True, False, iniciar_minigame
+                    if obj in dialogos and teclas_pressionadas[pygame.K_e]:
+                        return x, y, direcao, False, dialogos[obj],  iniciar_minigame
+
+                    if obj == 'escrivaninha' and teclas_pressionadas[pygame.K_e]:
+                        if "emails" in personagem.objetos:
+                            pausar_jogo_mensagem(tela, 'Você já possui a lista de e-mails! Pressione "F" para visualizá-la quando estiver em seu computador.')
+                        else:
+                            personagem.adicionar_objeto("emails")
+                            pausar_jogo_mensagem(tela, 'Você adquiriu a lista de e-mails válidos! Pressione "F" para visualizá-la quando estiver em seu computador.')
+                    
+                    if obj in ['maquina', 'maquina2'] and personagem.dinheiro >= 30 and teclas_pressionadas[pygame.K_e]:
+                        if obj == 'maquina':
+                            personagem.adicionar_objeto("petisco cachorro")
+                            pausar_jogo_mensagem(tela, 'Você adquiriu o petisco para cachorro!')
+                        else:
+                            personagem.adicionar_objeto("petisco gato")
+                            pausar_jogo_mensagem(tela, 'Você adquiriu o petisco para gato!')
+                        personagem.remover_dinheiro(30)
+
+                    if obj == 'cachorro' and teclas_pressionadas[pygame.K_e]:
+                        if "petisco cachorro" in personagem.objetos and personagem.vidas < 5:
+                            personagem.ganhar_vida()
+                            personagem.objetos.remove("petisco cachorro")
+                            pygame.mixer.Sound(CAMINHO_AUDIO + "cachorro.wav").play()
                             pausar_jogo_mensagem(tela, 'Você ganhou 1 ponto de vida!')
 
-                    colisao = True
-                    break
-        
+                    if obj == 'mesa_grande' and teclas_pressionadas[pygame.K_e]:
+                        if "petisco gato" in personagem.objetos and personagem.vidas < 5:
+                            personagem.ganhar_vida()
+                            personagem.objetos.remove("petisco gato")
+                            pygame.mixer.Sound(CAMINHO_AUDIO + "gato.mp3").play()
+                            pausar_jogo_mensagem(tela, 'Você ganhou 1 ponto de vida!')                
+    
         # Verificar colisão com mesas
         retangulos_mesas = [pygame.Rect(mesa_x, mesa_y, rects['mesa'].width, rects['mesa'].height) for mesa_x, mesa_y in mesas]
-        # Verificar colisão com mesas
-        retangulos_mesas = [pygame.Rect(mesa_x, mesa_y, rects['mesa'].width, rects['mesa'].height) for mesa_x, mesa_y in mesas]
+        retangulo_expandido_mesa5 = retangulos_mesas[5].inflate(retangulos_mesas[5].width * 0.5, retangulos_mesas[5].height * 0.5)
         for i, rect_mesa in enumerate(retangulos_mesas):
+            # Verificar colisão com o retângulo normal
             if rect_mesa.collidepoint(ponto):
                 if i == 5 and teclas_pressionadas[pygame.K_e]: 
                     iniciar_minigame = True
                     return x, y, direcao, False, None, iniciar_minigame
                 colisao = True
                 break
-        
+
+        # Verificar colisão expandida apenas para a mesa de índice 5
+        if retangulo_expandido_mesa5.collidepoint(ponto):
+            if teclas_pressionadas[pygame.K_e]: 
+                iniciar_minigame = True
+                return x, y, direcao, False, None, iniciar_minigame
+            
         if not colisao:
             x, y = novo_x, novo_y
             
@@ -320,15 +372,16 @@ def mostrar_caixa_dialogo(screen):
     largura_caixa = 400
     altura_caixa = 200
     x_caixa = (largura_tela - largura_caixa) // 2
-    y_caixa = (altura_tela - altura_caixa) // 2
+    y_caixa = ((altura_tela - altura_caixa) // 2) - 100
     
+    # Fonte para o texto
     fonte = pygame.font.Font(None, 36)
-    texto = fonte.render("Deseja voltar para a tela inicial?", True, (255, 255, 255))
+    texto = fonte.render("Deseja voltar para a tela inicial?", True, (0, 0, 0))  # Texto preto
     
     # Desenhar caixa de diálogo
     caixa_dialogo = pygame.Rect(x_caixa, y_caixa, largura_caixa, altura_caixa)
-    pygame.draw.rect(screen, (0, 0, 0), caixa_dialogo)  # Caixa preta
-    pygame.draw.rect(screen, (255, 255, 255), caixa_dialogo, 2)  # Borda branca
+    pygame.draw.rect(screen, (247, 236, 182), caixa_dialogo)  # Caixa com cor 247, 236, 182
+    pygame.draw.rect(screen, (84, 47, 28), caixa_dialogo, 5)  # Borda com cor 84, 47, 28
     
     # Desenhar o texto da mensagem
     screen.blit(texto, (x_caixa + (largura_caixa - texto.get_width()) // 2, y_caixa + 30))
@@ -350,6 +403,10 @@ def mostrar_caixa_dialogo(screen):
     # Desenhar os botões
     pygame.draw.rect(screen, (0, 255, 0), botao_sim)  # Botão verde para "Sim"
     pygame.draw.rect(screen, (255, 0, 0), botao_nao)  # Botão vermelho para "Não"
+    
+    # Desenhar as bordas dos botões
+    pygame.draw.rect(screen, (0, 0, 0), botao_sim, 2)  # Borda preta para o botão "Sim"
+    pygame.draw.rect(screen, (0, 0, 0), botao_nao, 2)  # Borda preta para o botão "Não"
     
     # Desenhar o texto dos botões
     screen.blit(texto_sim, (x_botao_sim + (largura_botao - texto_sim.get_width()) // 2, y_botao + (altura_botao - texto_sim.get_height()) // 2))

@@ -5,7 +5,7 @@ import os
 from config import LARGURA_TELA, ALTURA_TELA, TAMANHO_PERSONAGEM
 from utils import *
 
-def minigamefase1(tela, personagem):
+def minigamefase1(tela, personagem, concluido):
     som_game_over = pygame.mixer.Sound(CAMINHO_AUDIO + "game_over.wav")
     som_vitoria = pygame.mixer.Sound(CAMINHO_AUDIO + "victory.wav")
     som_vitoria.set_volume(0.2)
@@ -20,16 +20,29 @@ def minigamefase1(tela, personagem):
 
     random.shuffle(emails)
 
-    background = pygame.image.load(os.path.join(caminho_assets, "background.png")).convert_alpha()
+    background = pygame.image.load(os.path.join(caminho_assets, "background2.png")).convert_alpha()
+    regras =  pygame.image.load(os.path.join(caminho_assets, "background_regras.png")).convert_alpha()
     background = pygame.transform.scale(background, (largura_nova, altura_nova))
-
+    regras = pygame.transform.scale(regras, (largura_nova, altura_nova))
     nova_tela = pygame.Surface((largura_nova, altura_nova))
     nova_tela.blit(background, (0, 0))
 
     pos_x = (tela.get_width() - largura_nova) // 2
     pos_y = (tela.get_height() - altura_nova) // 2
     monitor_rect = pygame.Rect(pos_x + 40, pos_y + 260, largura_nova // 1.085, altura_nova // 1.88)
+    # Verificação se o jogo foi concluído
+    if concluido:
+        tela.blit(nova_tela, (pos_x, pos_y))
+        fonte = pygame.font.SysFont(None, 36)
+        mensagem_fim = fonte.render("Voce conseguiu! Vá falar com seu chefe", True, (0, 0, 0))
+        mensagem_fim_rect = mensagem_fim.get_rect(center=monitor_rect.center)
+        tela.blit(mensagem_fim, mensagem_fim_rect)
 
+        pygame.display.flip()
+        pygame.time.delay(1000)
+
+        return False, True
+    
     email_index = 0
     total_emails = len(emails)
     email_atual, email_tipo = emails[email_index]
@@ -41,7 +54,7 @@ def minigamefase1(tela, personagem):
     mensagem_mostrada = True
     esperando = True
     mostrando_email_valido = False
-
+    mostrando_regras = False
     # Tempo do minigame
     tempo_maximo = 90 # Tempo total em segundos
     tempo_inicial = 0  # Inicialmente 0
@@ -75,7 +88,9 @@ def minigamefase1(tela, personagem):
                     mensagem_mostrada = False
                     tempo_inicial = pygame.time.get_ticks()  # Marca o tempo inicial quando o minigame começa
                     jogo_iniciado = True  # O jogo foi iniciado
-
+                if evento.key == pygame.K_i and mensagem_mostrada:
+                    mostrando_regras = not mostrando_regras  # Alterna entre mostrar e não mostrar regras
+            
                 # Não permitir sair com teclas de movimentação
                 if evento.key in [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]:
                     continue  # Ignora as teclas de movimentação
@@ -99,8 +114,8 @@ def minigamefase1(tela, personagem):
                             fonte = pygame.font.SysFont(None, 36)
                             carregar_menu(tela, personagem, fonte_personalizada)
                             som_game_over.play() 
-                            mensagem = fonte.render("Suas vidas acabaram! Aperte Enter para reiniciar", True, (255, 255, 255))
-                            mensagem_rect = mensagem.get_rect(center=monitor_rect.center)
+                            mensagem = fonte.render("Suas vidas acabaram! Aperte Enter para reiniciar", True, (0, 0, 0))
+                            mensagem_rect = mensagem.get_rect(center=(monitor_rect.centerx, monitor_rect.centery + 150))
                             tela.blit(mensagem, mensagem_rect)
                             
                             pygame.display.flip()  # Atualiza a tela
@@ -132,8 +147,8 @@ def minigamefase1(tela, personagem):
                             fonte = pygame.font.SysFont(None, 36)
                             carregar_menu(tela, personagem, fonte_personalizada)
                             som_game_over.play() 
-                            mensagem = fonte.render("Suas vidas acabaram! Aperte Enter para reiniciar", True, (255, 255, 255))
-                            mensagem_rect = mensagem.get_rect(center=monitor_rect.center)
+                            mensagem = fonte.render("Suas vidas acabaram! Aperte Enter para reiniciar", True, (0, 0, 0))
+                            mensagem_rect = mensagem.get_rect(center=(monitor_rect.centerx, monitor_rect.centery + 150))
                             tela.blit(mensagem, mensagem_rect)
                             
                             pygame.display.flip()  # Atualiza a tela
@@ -163,8 +178,8 @@ def minigamefase1(tela, personagem):
                                     tela.blit(nova_tela, (pos_x, pos_y))
                                     fonte = pygame.font.SysFont(None, 36)
                                     som_vitoria.play() 
-                                    mensagem_fim = fonte.render("Voce conseguiu! Vá falar com seu chefe", True, (255, 255, 255))
-                                    mensagem_fim_rect = mensagem_fim.get_rect(center=monitor_rect.center)
+                                    mensagem_fim = fonte.render("Voce conseguiu! Vá falar com seu chefe", True, (0, 0, 0))
+                                    mensagem_fim_rect = mensagem_fim.get_rect(center=(monitor_rect.centerx, monitor_rect.centery + 150))
                                     tela.blit(mensagem_fim, mensagem_fim_rect)
 
                                     pygame.display.flip()
@@ -191,8 +206,8 @@ def minigamefase1(tela, personagem):
                 # Exibe a mensagem de derrota
                 fonte = pygame.font.SysFont(None, 36)
                 som_game_over.play()
-                mensagem = fonte.render("O tempo acabou! Aperte Enter para reiniciar", True, (255, 255, 255))
-                mensagem_rect = mensagem.get_rect(center=monitor_rect.center)
+                mensagem = fonte.render("O tempo acabou! Aperte Enter para reiniciar", True, (0, 0, 0))
+                mensagem_rect = mensagem.get_rect(center=(monitor_rect.centerx, monitor_rect.centery + 150))
                 tela.blit(mensagem, mensagem_rect)
                 
                 pygame.display.flip()  # Atualiza a tela
@@ -232,19 +247,18 @@ def minigamefase1(tela, personagem):
             tela.blit(texto_rejeitar, (rejeitar_rect.x + (rejeitar_rect.width - texto_rejeitar.get_width()) // 2, rejeitar_rect.y + (rejeitar_rect.height - texto_rejeitar.get_height()) // 2))
         
         elif mensagem_mostrada:
-            fonte = pygame.font.SysFont(None, 36)
-            mensagem1 = fonte.render("Uma vez que o minigame começa, ele só termina ", True, (255, 255, 255))
-            mensagem2 = fonte.render("após todos os emails serem respondidos.", True, (255, 255, 255))
-            mensagem3 = fonte.render("Você terá 90 segundos para responder todos os emails", True, (255, 255, 255))
-            mensagem4 = fonte.render("Aperte E para começar o minigame.", True, (255, 255, 255))
-            mensagem5 = fonte.render("Aperte ESC para sair", True, (255, 255, 255))
+            if mostrando_regras:
+                tela.blit(regras, (pos_x, pos_y))  # Exibe a tela de regras
+            else:
+                fonte = pygame.font.SysFont(None, 25)
+                mensagem1 = fonte.render("{Aperte E para começar o minigame}", True, (0, 0, 0))
+                mensagem2 = fonte.render("{Aperte I para ver as regras}", True, (0, 0, 0))
+                mensagem3 = fonte.render("{Aperte ESC para sair}", True, (0, 0, 0))
 
-            # Centralizando cada mensagem em relação ao monitor
-            tela.blit(mensagem1, mensagem1.get_rect(center=(monitor_rect.centerx, monitor_rect.centery - 80)))
-            tela.blit(mensagem2, mensagem2.get_rect(center=(monitor_rect.centerx, monitor_rect.centery - 40)))
-            tela.blit(mensagem3, mensagem3.get_rect(center=(monitor_rect.centerx, monitor_rect.centery)))
-            tela.blit(mensagem4, mensagem4.get_rect(center=(monitor_rect.centerx, monitor_rect.centery + 40)))
-            tela.blit(mensagem5, mensagem5.get_rect(center=(monitor_rect.centerx, monitor_rect.centery + 80)))
+                # Centralizando cada mensagem em relação ao monitor
+                tela.blit(mensagem1, mensagem1.get_rect(center=(monitor_rect.centerx - 300, monitor_rect.centery + 175)))
+                tela.blit(mensagem2, mensagem2.get_rect(center=(monitor_rect.centerx + 0, monitor_rect.centery + 175)))
+                tela.blit(mensagem3, mensagem3.get_rect(center=(monitor_rect.centerx + 300, monitor_rect.centery + 175)))
             
         if jogo_iniciado:
             tela.blit(texto_tempo, (monitor_rect.right - texto_tempo.get_width() - 10, monitor_rect.top + 10))  # Canto superior direito do retângulo

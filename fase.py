@@ -163,7 +163,7 @@ def mostrar_instrucoes(tela):
                 if evento.key == pygame.K_RETURN:  # Verifica se a tecla Enter foi pressionada
                     esperando = False  # Sai do loop ao pressionar Enter
                 
-def fase1():
+def fase2():
     
     tela, relogio = inicializar_jogo()
     (chao, parede, personagem_parado, animacao_andar, animacao_correr, ceu, janela, porta, maquina, maquina2, mesa, mesa_grande, computador1, 
@@ -244,8 +244,8 @@ def fase1():
     minigame_completo = False
     primeira_execucao = True
     flag_som = True
-    fase1_rodando = True
-    while fase1_rodando:
+    fase2_rodando = True
+    while fase2_rodando:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -266,7 +266,7 @@ def fase1():
         
         if voltar_para_tela_inicial:
             pygame.mixer.music.stop()
-            return False, None
+            return False
         
         if dialogo_ativado == 'chefe':
             if not minigame_completo:
@@ -277,7 +277,7 @@ def fase1():
                 else:
                     dialogo_a_exibir = dialogo_chefe_completou_minigame_cheio
                 exibir_dialogo(tela, caixa_dialogo, dialogo_a_exibir, som_dialogo, fonte_dialogo, PRETO)
-                return True, personagem_atributos  # Finaliza a fase após o diálogo do chefe
+                fase2_rodando = False  # Finaliza a fase após o diálogo do chefe
                 
         elif dialogo_ativado in dialogos_figurantes:
             exibir_dialogo(tela, caixa_dialogo, dialogos_figurantes[dialogo_ativado], som_dialogo, fonte_dialogo, PRETO)
@@ -285,8 +285,8 @@ def fase1():
         if iniciar_minigame:
             perdeu, ganhou = minigamefase1(tela, personagem_atributos, minigame_completo)
             if perdeu:
-                fase1()  # Chama a fase1 novamente para reiniciar
-                return False, None
+                fase2()  # Chama a fase1 novamente para reiniciar
+                return True
             if ganhou:
                 minigame_completo = True
         personagem, frame_atual = atualizar_animacao(teclas_pressionadas, frame_atual, animacao_andar, animacao_correr, personagem_parado)
@@ -313,4 +313,4 @@ def fase1():
         relogio.tick(30)
         
 if __name__ == "__main__":
-    fase1()
+    fase2()
