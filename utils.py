@@ -220,7 +220,7 @@ def pausar_jogo_imagem(tela, img):
         tela.blit(img, (1375, 10))  # Desenha a imagem na posição desejada
         pygame.display.flip()  # Atualiza a tela
         
-def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area_chao_horizontalmente_expandida, velocidade_correr, posicoes, rects, tela, personagem):
+def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area_chao_horizontalmente_expandida, velocidade_correr, posicoes, rects, tela, personagem, fase):
     novo_x, novo_y = x, y
     teclas_pressionadas = pygame.key.get_pressed()
     mesas = posicoes[14]
@@ -247,7 +247,7 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
                    'maquina', 'maquina2', 'mesa_grande', 
                    'gato', 'cachorro', 'escrivaninha', 
                    'chefe', 'figurante1', 'figurante2', 
-                   'figurante3', 'figurante4']
+                   'figurante3', 'figurante4', 'figurante5', 'figurante6']
         
         colisao = False
         dialogos = {
@@ -255,6 +255,8 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
             'figurante2': 'figurante2',
             'figurante3': 'figurante3',
             'figurante4': 'figurante4',
+            'figurante5': 'figurante5',
+            'figurante6': 'figurante6',
             'chefe': 'chefe'
         }
 
@@ -272,7 +274,7 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
                     if obj in dialogos and teclas_pressionadas[pygame.K_e]:
                         return x, y, direcao, False, dialogos[obj],  iniciar_minigame
 
-                    if obj == 'escrivaninha' and teclas_pressionadas[pygame.K_e]:
+                    if obj == 'escrivaninha' and teclas_pressionadas[pygame.K_e] and fase == 1:
                         if "emails" in personagem.objetos:
                             pausar_jogo_mensagem(tela, 'Você já possui a lista de e-mails! Pressione "F" para visualizá-la quando estiver em seu computador.')
                         else:
@@ -289,14 +291,14 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
                         personagem.remover_dinheiro(30)
 
                     if obj == 'cachorro' and teclas_pressionadas[pygame.K_e]:
-                        if "petisco cachorro" in personagem.objetos and personagem.vidas < 5:
+                        if "petisco cachorro" in personagem.objetos:
                             personagem.ganhar_vida()
                             personagem.objetos.remove("petisco cachorro")
                             pygame.mixer.Sound(CAMINHO_AUDIO + "cachorro.wav").play()
                             pausar_jogo_mensagem(tela, 'Você ganhou 1 ponto de vida!')
 
                     if obj == 'mesa_grande' and teclas_pressionadas[pygame.K_e]:
-                        if "petisco gato" in personagem.objetos and personagem.vidas < 5:
+                        if "petisco gato" in personagem.objetos:
                             personagem.ganhar_vida()
                             personagem.objetos.remove("petisco gato")
                             pygame.mixer.Sound(CAMINHO_AUDIO + "gato.mp3").play()
@@ -312,7 +314,7 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
                     if obj in dialogos and teclas_pressionadas[pygame.K_e]:
                         return x, y, direcao, False, dialogos[obj],  iniciar_minigame
 
-                    if obj == 'escrivaninha' and teclas_pressionadas[pygame.K_e]:
+                    if obj == 'escrivaninha' and teclas_pressionadas[pygame.K_e] and fase == 1:
                         if "emails" in personagem.objetos:
                             pausar_jogo_mensagem(tela, 'Você já possui a lista de e-mails! Pressione "F" para visualizá-la quando estiver em seu computador.')
                         else:

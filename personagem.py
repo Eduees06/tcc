@@ -25,7 +25,8 @@ class Personagem:
             self.som_perder_vida.play()  # Toca o som ao perder vida
 
     def ganhar_vida(self):
-        self.vidas += 1
+        if self.vidas < 5:
+            self.vidas += 1
 
     def adicionar_dinheiro(self, valor):
         self.dinheiro += valor

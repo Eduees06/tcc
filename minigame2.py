@@ -179,16 +179,17 @@ def mostrar_tela_anagrama(tela, monitor_rect, anagrama, arquivo_nome, personagem
             tela.blit(input_surface, input_surface.get_rect(center=rect_input.center))
 
         # Mensagens de tentativas restantes e desistência
-        tentativas_texto = fonte.render("Aperte Enter para inserir", True, (255, 255, 255))
-        desistir_texto = fonte.render("Aperte ESC para desistir", True, (255, 255, 255))
+        tentativas_texto = fonte.render("Aperte Enter para inserir", True, (0, 0, 0))
+        desistir_texto = fonte.render("Aperte ESC para desistir", True, (0, 0, 0))
 
         # Criar retângulo preto atrás das mensagens
         mensagens_rect = pygame.Rect(monitor_rect.x + 10, monitor_rect.y + 10, 300, 80)  # Retângulo para mensagens
-        pygame.draw.rect(tela, (0, 0, 0), mensagens_rect)  # Retângulo preto
+        pygame.draw.rect(tela, (0, 255, 0), mensagens_rect)  # Retângulo VERDE
+        pygame.draw.rect(tela, (0, 0, 0), mensagens_rect, 3)  # 3 é a espessura da borda
 
         # Blitar as mensagens
-        tela.blit(tentativas_texto, (mensagens_rect.x + 10, mensagens_rect.y + 10))  # Tentativas
-        tela.blit(desistir_texto, (mensagens_rect.x + 10, mensagens_rect.y + 40))  # Desistir
+        tela.blit(tentativas_texto, (mensagens_rect.x + 5, mensagens_rect.y + 10))  # Tentativas
+        tela.blit(desistir_texto, (mensagens_rect.x + 5, mensagens_rect.y + 40))  # Desistir
 
         # Botão Dica
         rect_dica = pygame.Rect(monitor_rect.right - 110, monitor_rect.bottom - 60, 100, 40)  # Botão Dica
@@ -208,8 +209,8 @@ def mostrar_tela_anagrama(tela, monitor_rect, anagrama, arquivo_nome, personagem
             retangulo_dica_rect.center = dica_rect.center  # Centraliza o retângulo com o texto
 
             # Desenha o retângulo preto
-            pygame.draw.rect(tela, (0, 0, 0), retangulo_dica_rect)  # Retângulo atrás da dica
-
+            pygame.draw.rect(tela, (0, 100, 0), retangulo_dica_rect)  # Retângulo atrás da dica
+            pygame.draw.rect(tela, (0, 0, 0), retangulo_dica_rect, 3)  # 3 é a espessura da borda
             # Exibe a dica na tela
             tela.blit(dica_texto, dica_rect)  # Exibe o texto da dica
 
@@ -223,12 +224,15 @@ def mostrar_mensagem(tela, mensagem, monitor_rect):
     texto = fonte.render(mensagem, True, (255, 255, 255))
     texto_rect = texto.get_rect(center=(monitor_rect.centerx, monitor_rect.bottom - texto.get_height() // 2 - 20))
 
-    # Cria um retângulo preto atrás da mensagem
+    # Cria um retângulo verde escuro atrás da mensagem
     retangulo_rect = texto_rect.inflate(20, 20)  # Inflar o retângulo para dar espaço extra ao redor do texto
     retangulo_rect.center = texto_rect.center  # Centraliza o retângulo com o texto
 
-    # Desenha o retângulo preto
-    pygame.draw.rect(tela, (0, 0, 0), retangulo_rect)
+    # Desenha o retângulo verde escuro
+    pygame.draw.rect(tela, (0, 100, 0), retangulo_rect)
+
+    # Desenha a borda preta ao redor do retângulo
+    pygame.draw.rect(tela, (0, 0, 0), retangulo_rect, 3)  # 3 é a espessura da borda
 
     # Exibir a mensagem
     tela.blit(texto, texto_rect)
@@ -253,15 +257,10 @@ def mostrar_confirmacao(tela, mensagem, monitor_rect):
     rect_sim = pygame.Rect(texto_rect.centerx - 60, texto_rect.centery + 20, 50, 30)
     rect_nao = pygame.Rect(texto_rect.centerx + 10, texto_rect.centery + 20, 50, 30)
 
-    # Cria retângulos pretos atrás dos botões
-    retangulo_sim_rect = rect_sim.inflate(10, 10)
-    retangulo_nao_rect = rect_nao.inflate(10, 10)
-
     # Desenha os retângulos pretos
-    pygame.draw.rect(tela, (0, 0, 0), retangulo_texto_rect)  # Retângulo atrás da mensagem
-    pygame.draw.rect(tela, (0, 0, 0), retangulo_sim_rect)    # Retângulo atrás do botão "Sim"
-    pygame.draw.rect(tela, (0, 0, 0), retangulo_nao_rect)    # Retângulo atrás do botão "Não"
-
+    pygame.draw.rect(tela, (0, 100, 0), retangulo_texto_rect)  # Retângulo atrás da mensagem
+    pygame.draw.rect(tela, (0, 0, 0), retangulo_texto_rect, 3)  # 3 é a espessura da borda
+    
     # Desenha os botões
     pygame.draw.rect(tela, (0, 255, 0), rect_sim)  # Botão Sim
     pygame.draw.rect(tela, (255, 0, 0), rect_nao)  # Botão Não
@@ -312,7 +311,7 @@ def obter_dica(arquivo_nome):
     return dicas.get(arquivo_nome, "Dica não disponível.")  # Dica padrão se o arquivo não estiver no dicionário
         
 # Função principal do minigame
-def minigamefase2(tela, personagem, concluido):
+def minigamefase2(tela, personagem, concluido, completou_todos):
     som_game_over = pygame.mixer.Sound(CAMINHO_AUDIO + "game_over.wav")
     largura_nova, altura_nova = 1000, 1000
     imagem_parede_original = pygame.image.load(os.path.join(caminho_assets, "caminho_labirinto.png")).convert_alpha()
@@ -356,8 +355,10 @@ def minigamefase2(tela, personagem, concluido):
 
         pygame.display.flip()
         pygame.time.delay(1000)
-
-        return False, True
+        if completou_todos:
+            return False, True, True
+        else:
+            return False, True, False
     while esperando:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -365,7 +366,7 @@ def minigamefase2(tela, personagem, concluido):
                 exit()
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_ESCAPE:
-                    return False, False
+                    return False, False, False
                 if evento.key == pygame.K_e and not mostrando_labirintos:  # Iniciar o minigame e gerar o labirinto
                     mostrando_labirintos = True
                     if not labirinto_gerado:
@@ -485,7 +486,7 @@ def minigamefase2(tela, personagem, concluido):
                                                     monitor_y + y * cell_height))
 
             # Desenhar arquivos corrompidos
-            fonte = pygame.font.SysFont(None, 24)
+            fonte = pygame.font.SysFont(None, 20)
             for (arquivo_x, arquivo_y, nome_arquivo, anagrama) in arquivos_corrompidos:
                 if nome_arquivo in arquivos_resolvidos:  # Verifica se o arquivo já foi resolvido
                     pygame.draw.rect(tela, cor_caminho, 
@@ -496,7 +497,7 @@ def minigamefase2(tela, personagem, concluido):
                 else:
                     rect = pygame.Rect(monitor_x + arquivo_x * cell_width, monitor_y + arquivo_y * cell_height, cell_width, cell_height)
                     pygame.draw.rect(tela, cor_arquivo, rect)  # Pinta de vermelho
-                    texto_arquivo = fonte.render(nome_arquivo, True, (255, 255, 255))  # Renderiza o nome do arquivo
+                    texto_arquivo = fonte.render("Arquivo", True, (255, 255, 255))  # Renderiza o nome do arquivo
                     texto_rect = texto_arquivo.get_rect(center=rect.center)
                     tela.blit(texto_arquivo, texto_rect)  # Desenha o texto do arquivo
 
@@ -516,7 +517,7 @@ def minigamefase2(tela, personagem, concluido):
                                     monitor_y + final_pos[1] * cell_height + 5))
 
             # **Visibilidade Reduzida (Neblina)**
-            overlay = pygame.Surface((monitor_rect.width, monitor_rect.height), pygame.SRCALPHA)
+            overlay = pygame.Surface((monitor_rect.width, monitor_rect.height + 8), pygame.SRCALPHA)
             overlay.fill((0, 0, 0, 255))  # Preenche a superfície com preto total (255 alfa)
 
             # Posição do jogador

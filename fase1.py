@@ -262,7 +262,7 @@ def fase1():
                         pygame.mixer.music.pause()  # Muta o som
 
         teclas_pressionadas = pygame.key.get_pressed()
-        x_personagem, y_personagem, direcao, voltar_para_tela_inicial, dialogo_ativado, iniciar_minigame = mover_personagem(teclas_pressionadas, x_personagem, y_personagem, VELOCIDADE_PERSONAGEM, direcao, TAMANHO_PERSONAGEM, area_chao_horizontalmente_expandida, VELOCIDADE_CORRER, posicoes, rects, tela, personagem_atributos)
+        x_personagem, y_personagem, direcao, voltar_para_tela_inicial, dialogo_ativado, iniciar_minigame = mover_personagem(teclas_pressionadas, x_personagem, y_personagem, VELOCIDADE_PERSONAGEM, direcao, TAMANHO_PERSONAGEM, area_chao_horizontalmente_expandida, VELOCIDADE_CORRER, posicoes, rects, tela, personagem_atributos, 1)
         
         if voltar_para_tela_inicial:
             pygame.mixer.music.stop()

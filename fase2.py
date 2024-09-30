@@ -13,6 +13,19 @@ CAMINHO_AUDIO = "D:\\jogo\\audios\\"
 # Inicialize o Pygame
 pygame.init()
 
+
+def animacao_figurantes_novos_fase2():
+    animacao_figurante5 = [
+        pygame.transform.scale(pygame.image.load(os.path.join(caminho_assets, f"figurante5esperando{i}.png")).convert_alpha(), (TAMANHO_PERSONAGEM, TAMANHO_PERSONAGEM))
+        for i in range(1, 7) 
+    ]
+    animacao_figurante6 = [
+        pygame.transform.scale(pygame.image.load(os.path.join(caminho_assets, f"figurante6esperando{i}.png")).convert_alpha(), (TAMANHO_PERSONAGEM, TAMANHO_PERSONAGEM))
+        for i in range(1, 7) 
+    ]    
+    
+    return animacao_figurante5, animacao_figurante6
+
 #provisorio para testar a fase
 personagem = Personagem(vidas=5, dinheiro= 200)
 
@@ -21,6 +34,9 @@ def fase2(personagem):
     tela, relogio = inicializar_jogo()
     (chao, parede, personagem_parado, animacao_andar, animacao_correr, ceu, janela, porta, maquina, maquina2, mesa, mesa_grande, computador1, 
      computador2, gato, cachorro, relogio_figura, rects, animacao_figurante1, animacao_figurante2, animacao_figurante3, animacao_figurante4, chefe, escrivaninha, caixa_dialogo, emails, som, som_mutado) = carregar_assets()
+    
+    animacao_figurante5, animacao_figurante6 = animacao_figurantes_novos_fase2()
+    
     # Inicializar vidas
     personagem_atributos = personagem
     
@@ -36,11 +52,13 @@ def fase2(personagem):
         (rects['mesa0'].x - 150, rects['mesa0'].y - 80),
         (rects['mesa15'].x - 250, rects['mesa15'].y - 60),
         (rects['mesa9'].x - 510, rects['mesa9'].y - 70),
-        (rects['mesa20'].x - 150, rects['mesa20'].y - 60)
+        (rects['mesa20'].x - 150, rects['mesa20'].y - 60),
+        (rects['mesa16'].x - 510, rects['mesa16'].y + 30),
+        (rects['mesa19'].x + 30, rects['mesa19'].y - 60)
     ]
     
-    tamanhos_figurantes = [(90, 70), (90, 70), (90, 70), (90, 70)]
-    animacoes_figurantes = [animacao_figurante1, animacao_figurante2, animacao_figurante3, animacao_figurante4]
+    tamanhos_figurantes = [(90, 70), (90, 70), (90, 70), (90, 70), (90, 70), (90, 70)]
+    animacoes_figurantes = [animacao_figurante1, animacao_figurante2, animacao_figurante3, animacao_figurante4, animacao_figurante5, animacao_figurante6]
     
     figurantes, rects_figurantes = inicializar_figurantes(posicoes_figurantes, animacoes_figurantes, tamanhos_figurantes)
 
@@ -71,7 +89,7 @@ def fase2(personagem):
         ],
         'figurante2': [
             "Ana: Esse ataque me deixou tão preocupada! Não se esqueça: se você receber um e-mail suspeito, não clique em nada. Confirme sempre a fonte!",
-            "Ana: Uma vez, perdi muitos arquivos porque não tinha um backup recente. Aprendi da maneira mais difícil a importância de testar os backups regularmente. E você sabia que aquele HACKER usou criptografia para sequestrar os dados?"
+            "Ana: Uma vez, perdi muitos arquivos porque não tinha um backup recente. Aprendi da maneira mais difícil a importância de testar os backups regularmente. E você sabia que aquele Hacker usou criptografia para sequestrar os dados?"
         ],
         'figurante3': [
             "Lorena: Você sabia que a empresa mantém imagens de sistemas operacionais pré-configurados? Isso pode acelerar a recuperação em caso de ataque!",
@@ -80,6 +98,14 @@ def fase2(personagem):
         'figurante4': [
             "Matheus: O dia está pesado e a segurança vem em primeiro lugar! A internet é tão perigosa, que já não bastava o treinamento para phishing de ontem; agora temos ataques de ransomware. Amanhã, com certeza vou ser atropelado por uma tartaruga!",
             "Matheus: Um bom plano de resposta a incidentes pode ser a diferença entre perder tudo ou recuperar rapidamente. Vamos garantir que nossos dados estejam seguros! Porque, sinceramente, não sei o que mais pode acontecer hoje..."
+        ],
+        'figurante5': [
+        "Karina: Eu não estava aqui ontem, tive que lidar com uma auditoria de segurança. Agora que voltei, a situação é bem pior! Você sabia que os responsáveis por ataques podem ser desde hackers buscando diversão até terroristas patrocinados por governos estrangeiros? Precisamos estar preparados para tudo!",
+        "Karina: Não subestime ameaças internas. Malicious insiders, funcionários ou ex-funcionários com acesso, também podem causar estragos. Sempre desconfie de comportamentos estranhos e de acessos não autorizados!"
+        ],
+    'figurante6': [
+        "Nicolas: Cheguei tarde porque estava isolando alguns sistemas comprometidos, e parece que a coisa aqui também está feia. Sabe o que pode indicar que estamos sob ataque? Servidores lentos, antivírus desabilitado, e aquele pico de tráfego de internet sem explicação.",
+        "Nicolas: Já notei arquivos sendo modificados sozinhos e até logs com falhas de autenticação em massa. Se você vir algo assim, avise o time de TI imediatamente!"
         ]
     }
     
@@ -112,7 +138,7 @@ def fase2(personagem):
                         pygame.mixer.music.pause()  # Muta o som
 
         teclas_pressionadas = pygame.key.get_pressed()
-        x_personagem, y_personagem, direcao, voltar_para_tela_inicial, dialogo_ativado, iniciar_minigame = mover_personagem(teclas_pressionadas, x_personagem, y_personagem, VELOCIDADE_PERSONAGEM, direcao, TAMANHO_PERSONAGEM, area_chao_horizontalmente_expandida, VELOCIDADE_CORRER, posicoes, rects, tela, personagem_atributos)
+        x_personagem, y_personagem, direcao, voltar_para_tela_inicial, dialogo_ativado, iniciar_minigame = mover_personagem(teclas_pressionadas, x_personagem, y_personagem, VELOCIDADE_PERSONAGEM, direcao, TAMANHO_PERSONAGEM, area_chao_horizontalmente_expandida, VELOCIDADE_CORRER, posicoes, rects, tela, personagem_atributos, 2)
         
         if voltar_para_tela_inicial:
             pygame.mixer.music.stop()
@@ -133,7 +159,7 @@ def fase2(personagem):
             exibir_dialogo(tela, caixa_dialogo, dialogos_figurantes[dialogo_ativado], som_dialogo, fonte_dialogo, PRETO)
         
         if iniciar_minigame:
-            perdeu, ganhou, gabaritou = minigamefase2(tela, personagem_atributos, minigame_completo)
+            perdeu, ganhou, gabaritou = minigamefase2(tela, personagem_atributos, minigame_completo, gabaritou)
             if perdeu:
                 fase2(personagem = Personagem(vidas=5, dinheiro= 0))  # Chama a fase2 novamente para reiniciar
                 return True
