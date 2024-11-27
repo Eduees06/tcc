@@ -7,10 +7,6 @@ from personagem import *
 from minigame1 import *
 
 
-# Caminho dos assets
-caminho_assets = "D:/jogo/assets/images"
-CAMINHO_AUDIO = "D:\\jogo\\audios\\"
-
 # Inicialize o Pygame
 pygame.init()
 
@@ -57,13 +53,11 @@ def desenhar_figurantes(tela, figurantes, posicoes_figurantes):
 def exibir_dialogo(tela, caixa_dialogo, falas, som_dialogo, fonte, cor):
     largura_tela, altura_tela = tela.get_size()
     
-    # Calcula a posição da caixa de diálogo para ficar centralizada na parte inferior
     rect_caixa = caixa_dialogo.get_rect()
-    rect_caixa.centerx = largura_tela // 2  # Centraliza horizontalmente
-    rect_caixa.bottom = altura_tela + 150    # Posiciona 20px acima da parte inferior da tela
+    rect_caixa.centerx = largura_tela // 2 
+    rect_caixa.bottom = altura_tela + 150 
 
     for fala in falas:
-        # Toca o som do diálogo
         som_dialogo.play()
 
         # Quebra o texto em linhas
@@ -174,9 +168,9 @@ def fase1():
     altura_chao, area_chao_horizontalmente_expandida = definir_areas_chao()
     posicoes, rects = definir_posicoes_objetos(altura_chao, rects)
     # Configurações da música de fundo
-    pygame.mixer.music.load(CAMINHO_AUDIO + "background.mp3")
+    pygame.mixer.music.load(os.path.join(CAMINHO_AUDIO, "background.mp3"))
     pygame.mixer.music.set_volume(0.05)
-    pygame.mixer.music.play(-1)  # -1 para repetir indefinidamente
+    pygame.mixer.music.play(-1)  # -1 para repetir
     # Configurações dos figurantes
     posicoes_figurantes = [
         (rects['mesa0'].x - 150, rects['mesa0'].y - 80),
@@ -192,14 +186,15 @@ def fase1():
 
     dialogo_chefe = [
         "Chefe: Bem-vindo ao seu primeiro dia na Plunder Drifflin Co! Estamos animados em tê-lo aqui.",
-        "Chefe: Nossa empresa é especializada na compra e venda de itens, e seu papel é fundamental para nosso sucesso.",
-        "Chefe: Sua primeira missão é responder a alguns e-mails que deixei na sua mesa. Eles contêm informações importantes para você começar.",
-        "Chefe: Mas antes de tudo, converse com seus colegas de trabalho! Eles poderão te mostrar onde fica seu computador e dar algumas dicas úteis sobre como funcionamos aqui.",
-        "Chefe: Ah, e uma dica importante sobre e-mails: fique sempre alerta para tentativas de golpe, especialmente o que chamamos de phishing.",
-        "Chefe: Phishing é quando alguém tenta se passar por uma empresa legítima para roubar suas informações. Então, sempre verifique quem está enviando o e-mail antes de clicar em qualquer link.",
+        "Chefe: Nossa empresa é especializada no desenvolvimento de softwares e dispositivos de inteligência artificial, seu papel é fundamental para nosso sucesso.",
+        "Chefe: Converse com seus colegas de trabalho! Eles poderão te mostrar onde fica seu computador e dar algumas dicas úteis sobre como funcionamos aqui.",
+        "Chefe: Sua primeira missão é responder a alguns e-mails que deixei na sua mesa, eles contêm informações importantes para você começar.",
+        "Chefe: Ah, e uma coisa importante que gostaria de mencionar: Fique atento aos e-mails que você recebe. Infelizmente, às vezes pessoas mal-intencionadas tentam se passar por empresas confiáveis.",
+        "Chefe: Isso é o que chamamos de Phishing. Então, sempre verifique quem está enviando o e-mail antes de clicar em qualquer link.",
         "Chefe: Se um e-mail parecer muito bom para ser verdade ou vier com um senso de urgência, é melhor desconfiar! E-mails com anexos também podem ser perigosos.",
         "Chefe: Para te ajudar, deixei uma lista de e-mails confiáveis na escrivaninha. Isso vai facilitar na hora de identificar o que é seguro. Depois de responder os e-mails, volte aqui e me avise!"
     ]
+    
     dialogo_chefe_completou_minigame_cheio = [
         "Chefe: Ótimo trabalho em responder os e-mails! Agora você está pronto para enfrentar os desafios do dia a dia.",
         "Chefe: Não esqueça das dicas que mencionei. Elas serão úteis em sua jornada aqui na Plunder Drifflin Co!",
@@ -223,9 +218,9 @@ def fase1():
             "Ana: Fique esperto! Sempre cheque o endereço antes de clicar. Pode fazer toda a diferença!"
         ],
         'figurante3': [
-            "Lorena: Oi, você viu nossos amigos de quatro patas por aqui? O cachorro ali adora os petiscos que ficam naquela máquina perto do gato, e o gato, bem, ele não consegue resistir aos petiscos da outra máquina",
-            "Lorena: Sabe, é curioso... Eu realmente não entendo por que eles ficam tão distantes das máquinas que vendem as comidas que eles gostam! Você acha que eles estão tentando nos pregar uma peça?",
-            "Lorena: Ah, e se você tiver 30 moedas, pode comprar uns petiscos para eles. Garanto que vão ficar super felizes! Pode ser uma boa forma de conquistar a confiança deles, quem sabe?"
+            "Soraia: Oi, você viu nossos amigos de quatro patas por aqui? O cachorro ali adora os petiscos que ficam naquela máquina perto do gato, e o gato, bem, ele não consegue resistir aos petiscos da outra máquina",
+            "Soraia: Sabe, é curioso... Eu realmente não entendo por que eles ficam tão distantes das máquinas que vendem as comidas que eles gostam! Você acha que eles estão tentando nos pregar uma peça?",
+            "Soraia: Ah, e se você tiver 30 moedas, pode comprar uns petiscos para eles. Garanto que vão ficar super felizes! Pode ser uma boa forma de conquistar a confiança deles, quem sabe?"
 
         ],
         'figurante4': [
@@ -234,7 +229,7 @@ def fase1():
         ]
     }
     
-    som_dialogo = pygame.mixer.Sound(CAMINHO_AUDIO + "teclado.mp3")
+    som_dialogo = pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "teclado.mp3"))
     # Adiciona os rects dos figurantes ao dicionário principal
     rects.update(rects_figurantes)
     

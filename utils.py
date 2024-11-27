@@ -7,11 +7,23 @@ from personagem import *
 pygame.init()
 
 # Caminho dos assets
-caminho_assets = "D:/jogo/assets/images"
-CAMINHO_AUDIO = "D:\\jogo\\audios\\"
+caminho_assets = os.path.join(os.getcwd(), "assets", "images")
+caminho_fonte = os.path.join(os.getcwd(), "assets", "fontes", "Early GameBoy.ttf")
+fonte_personalizada = pygame.font.Font(caminho_fonte, 35)
 
-fonte_personalizada = pygame.font.Font('D:/jogo/fontes/Early GameBoy.ttf', 35)
+# Verifica se o código está sendo executado a partir do executável
 
+if getattr(sys, 'frozen', False):
+    # Caminhos no ambiente do executável
+    CAMINHO_AUDIO = os.path.join(sys._MEIPASS, "assets", "audios")
+    CAMINHO_FONTES = os.path.join(sys._MEIPASS, "assets", "fontes")
+    caminho_assets = os.path.join(sys._MEIPASS, "assets", "images")
+else:
+    # Caminhos durante o desenvolvimento
+    CAMINHO_AUDIO = os.path.join(os.getcwd(), "assets", "audios")
+    CAMINHO_FONTES = os.path.join(os.getcwd(), "assets", "fontes")
+    caminho_assets = os.path.join(os.getcwd(), "assets", "images")
+    
 def calcular_escala(largura_tela):
     if largura_tela == 1280:
         return largura_tela // 13
@@ -247,7 +259,7 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
                    'maquina', 'maquina2', 'mesa_grande', 
                    'gato', 'cachorro', 'escrivaninha', 
                    'chefe', 'figurante1', 'figurante2', 
-                   'figurante3', 'figurante4', 'figurante5', 'figurante6']
+                   'figurante3', 'figurante4', 'figurante5', 'figurante6', 'figurante7', 'figurante8']
         
         colisao = False
         dialogos = {
@@ -257,6 +269,8 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
             'figurante4': 'figurante4',
             'figurante5': 'figurante5',
             'figurante6': 'figurante6',
+            'figurante7': 'figurante7',
+            'figurante8': 'figurante8',
             'chefe': 'chefe'
         }
 
@@ -294,14 +308,14 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
                         if "petisco cachorro" in personagem.objetos:
                             personagem.ganhar_vida()
                             personagem.objetos.remove("petisco cachorro")
-                            pygame.mixer.Sound(CAMINHO_AUDIO + "cachorro.wav").play()
+                            pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "cachorro.wav")).play()
                             pausar_jogo_mensagem(tela, 'Você ganhou 1 ponto de vida!')
 
                     if obj == 'mesa_grande' and teclas_pressionadas[pygame.K_e]:
                         if "petisco gato" in personagem.objetos:
                             personagem.ganhar_vida()
                             personagem.objetos.remove("petisco gato")
-                            pygame.mixer.Sound(CAMINHO_AUDIO + "gato.mp3").play()
+                            pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "gato.mp3")).play()
                             pausar_jogo_mensagem(tela, 'Você ganhou 1 ponto de vida!')      
                     break
                 
@@ -334,14 +348,14 @@ def mover_personagem(teclas, x, y, velocidade, direcao, tamanho_personagem, area
                         if "petisco cachorro" in personagem.objetos and personagem.vidas < 5:
                             personagem.ganhar_vida()
                             personagem.objetos.remove("petisco cachorro")
-                            pygame.mixer.Sound(CAMINHO_AUDIO + "cachorro.wav").play()
+                            pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "cachorro.wav")).play()
                             pausar_jogo_mensagem(tela, 'Você ganhou 1 ponto de vida!')
 
                     if obj == 'mesa_grande' and teclas_pressionadas[pygame.K_e]:
                         if "petisco gato" in personagem.objetos and personagem.vidas < 5:
                             personagem.ganhar_vida()
                             personagem.objetos.remove("petisco gato")
-                            pygame.mixer.Sound(CAMINHO_AUDIO + "gato.mp3").play()
+                            pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "gato.mp3")).play()
                             pausar_jogo_mensagem(tela, 'Você ganhou 1 ponto de vida!')                
     
         # Verificar colisão com mesas

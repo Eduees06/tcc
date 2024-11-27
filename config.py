@@ -1,5 +1,3 @@
-# Caminho para os assets
-CAMINHO_ASSETS = "D:/jogo/assets/images"
 
 # Configurações da tela
 RESOLUCAO = "FULL_HD"  # Pode ser "HD" ou "FULL_HD"

@@ -7,9 +7,6 @@ from minigame1 import *
 from fase1 import *
 from minigame2 import *
 
-caminho_assets = "D:/jogo/assets/images\\"
-CAMINHO_AUDIO = "D:\\jogo\\audios\\"
-
 # Inicialize o Pygame
 pygame.init()
 
@@ -44,7 +41,7 @@ def fase2(personagem):
     altura_chao, area_chao_horizontalmente_expandida = definir_areas_chao()
     posicoes, rects = definir_posicoes_objetos(altura_chao, rects)
     # Configurações da música de fundo
-    pygame.mixer.music.load(CAMINHO_AUDIO + "background.mp3")
+    pygame.mixer.music.load(os.path.join(CAMINHO_AUDIO, "background.mp3"))
     pygame.mixer.music.set_volume(0.05)
     pygame.mixer.music.play(-1)  # -1 para repetir indefinidamente
     # Configurações dos figurantes
@@ -67,7 +64,7 @@ def fase2(personagem):
         "Chefe: Alguns dados importantes da empresa já estão criptografados, e precisamos agir rapidamente.",
         "Chefe: Converse com seus colegas de trabalho para conseguir ajuda! É fundamental que todos estejam envolvidos nesse esforço.",
         "Chefe: Depois, dirija-se à sua mesa e tente buscar backups do sistema que possam ter sido salvos antes do ataque. Além disso, precisamos tentar desincriptografar alguns arquivos que foram sequestrados.",
-        "Chefe: Os atacantes estão pedindo uma quantia em dinheiro em troca do retorno dos dados. Lembre-se, o tempo é essencial! Quanto mais rápido agirmos, maiores serão nossas chances de recuperar os dados!"
+        "Chefe: Lembre-se, o tempo é essencial! Quanto mais rápido agirmos, maiores serão nossas chances de recuperar os dados!"
 
     ]
     dialogo_chefe_completou_minigame_cheio = [
@@ -85,31 +82,31 @@ def fase2(personagem):
     dialogos_figurantes = {
         'figurante1': [
             "Arthur: Uau, você já ouviu sobre o ataque de ransomware que afetou a empresa? É alarmante! Precisamos estar atentos a cada e-mail que recebemos.",
-            "Arthur: Antigamente, também enfrentamos um ataque DDoS na empresa. Eu sempre digo: um firewall melhor é como um guarda-chuva, nunca se sabe quando vai precisar! Manter backups offline e usar um firewall eficaz é essencial. Ninguém quer perder dados importantes de novo!"
+            "Arthur: Antigamente, também enfrentamos um ataque DDoS na empresa. Eu sempre digo: um firewall melhor é como um guarda-chuva, nunca se sabe quando vai precisar! Manter backups offline e usar um firewall eficaz é essencial, ninguém quer perder dados importantes!"
         ],
         'figurante2': [
             "Ana: Esse ataque me deixou tão preocupada! Não se esqueça: se você receber um e-mail suspeito, não clique em nada. Confirme sempre a fonte!",
-            "Ana: Uma vez, perdi muitos arquivos porque não tinha um backup recente. Aprendi da maneira mais difícil a importância de testar os backups regularmente. E você sabia que aquele Hacker usou criptografia para sequestrar os dados?"
+            "Ana: Uma vez, perdi muitos arquivos porque não tinha um backup recente. Aprendi da maneira mais difícil a importância de testar os backups regularmente."
         ],
         'figurante3': [
-            "Lorena: Você sabia que a empresa mantém imagens de sistemas operacionais pré-configurados? Isso pode acelerar a recuperação em caso de ataque!",
-            "Lorena: Lembre-se: um bom antivirus pode ser a nossa primeira linha de defesa contra malware."
+            "Soraia: Você sabia que a empresa mantém imagens de sistemas operacionais pré-configurados? Isso pode acelerar a recuperação em caso de ataque!",
+            "Soraia: Lembre-se: um bom antivirus pode ser a nossa primeira linha de defesa contra malware."
         ],
         'figurante4': [
             "Matheus: O dia está pesado e a segurança vem em primeiro lugar! A internet é tão perigosa, que já não bastava o treinamento para phishing de ontem; agora temos ataques de ransomware. Amanhã, com certeza vou ser atropelado por uma tartaruga!",
             "Matheus: Um bom plano de resposta a incidentes pode ser a diferença entre perder tudo ou recuperar rapidamente. Vamos garantir que nossos dados estejam seguros! Porque, sinceramente, não sei o que mais pode acontecer hoje..."
         ],
         'figurante5': [
-        "Karina: Eu não estava aqui ontem, tive que lidar com uma auditoria de segurança. Agora que voltei, a situação é bem pior! Você sabia que os responsáveis por ataques podem ser desde hackers buscando diversão até terroristas patrocinados por governos estrangeiros? Precisamos estar preparados para tudo!",
-        "Karina: Não subestime ameaças internas. Malicious insiders, funcionários ou ex-funcionários com acesso, também podem causar estragos. Sempre desconfie de comportamentos estranhos e de acessos não autorizados!"
+        "Karina: Ontem tive que lidar com uma auditoria de segurança. Agora que voltei, a situação é bem pior! Você sabia que os responsáveis por ataques podem ser desde hackers buscando diversão até terroristas patrocinados por governos estrangeiros? Precisamos estar preparados para tudo!",
+        "Karina: Os atacantes estão utilizando um tipo de malware chamado Ransomware. Ele criptografa nossos dados e só libera o acesso de volta se pagarmos uma quantia em dinheiro. É uma situação bem delicada, e precisamos estar preparados para lidar com isso."
         ],
-    'figurante6': [
-        "Nicolas: Cheguei tarde porque estava isolando alguns sistemas comprometidos, e parece que a coisa aqui também está feia. Sabe o que pode indicar que estamos sob ataque? Servidores lentos, antivírus desabilitado, e aquele pico de tráfego de internet sem explicação.",
-        "Nicolas: Já notei arquivos sendo modificados sozinhos e até logs com falhas de autenticação em massa. Se você vir algo assim, avise o time de TI imediatamente!"
+        'figurante6': [
+            "Nicolas: Cheguei tarde porque estava isolando alguns sistemas comprometidos, e parece que a coisa aqui também está feia. Sabe o que pode indicar que estamos sob ataque? Servidores lentos, antivírus desabilitado, e aquele pico de tráfego de internet sem explicação.",
+            "Nicolas: Já notei arquivos sendo modificados sozinhos e até logs com falhas de autenticação em massa. Se você vir algo assim, avise o time de TI imediatamente!"
         ]
     }
     
-    som_dialogo = pygame.mixer.Sound(CAMINHO_AUDIO + "teclado.mp3")
+    som_dialogo = pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "teclado.mp3"))
     # Adiciona os rects dos figurantes ao dicionário principal
     rects.update(rects_figurantes)
     
@@ -117,7 +114,6 @@ def fase2(personagem):
     direcao = "direita"
     tempo_espera_animacao = 200  # Intervalo entre frames (em milissegundos)
     minigame_completo = False
-    primeira_execucao = True
     flag_som = True
     fase2_rodando = True
     gabaritou = False
@@ -142,7 +138,7 @@ def fase2(personagem):
         
         if voltar_para_tela_inicial:
             pygame.mixer.music.stop()
-            return False
+            return False, personagem_atributos
         
         if dialogo_ativado == 'chefe':
             if not minigame_completo:
@@ -153,7 +149,7 @@ def fase2(personagem):
                 else:
                     dialogo_a_exibir = dialogo_chefe_completou_minigame_baixo
                 exibir_dialogo(tela, caixa_dialogo, dialogo_a_exibir, som_dialogo, fonte_dialogo, PRETO)
-                fase2_rodando = False  # Finaliza a fase após o diálogo do chefe
+                return True, personagem_atributos
                 
         elif dialogo_ativado in dialogos_figurantes:
             exibir_dialogo(tela, caixa_dialogo, dialogos_figurantes[dialogo_ativado], som_dialogo, fonte_dialogo, PRETO)
@@ -162,7 +158,7 @@ def fase2(personagem):
             perdeu, ganhou, gabaritou = minigamefase2(tela, personagem_atributos, minigame_completo, gabaritou)
             if perdeu:
                 fase2(personagem = Personagem(vidas=5, dinheiro= 0))  # Chama a fase2 novamente para reiniciar
-                return True
+                return False, personagem_atributos
             if ganhou:
                 minigame_completo = True
         personagem, frame_atual = atualizar_animacao(teclas_pressionadas, frame_atual, animacao_andar, animacao_correr, personagem_parado)
@@ -180,10 +176,6 @@ def fase2(personagem):
         # Desenhar figurantes
         desenhar_figurantes(tela, figurantes, posicoes_figurantes)
         carregar_menu(tela, personagem_atributos, fonte_personalizada)
-        
-        if primeira_execucao:
-            mostrar_instrucoes(tela)
-            primeira_execucao = False
             
         pygame.display.flip()
         relogio.tick(30)

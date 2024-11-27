@@ -3,11 +3,12 @@ import sys
 import os
 from fase1 import fase1
 from fase2 import fase2
+from fase3 import fase3
 from personagem import *
 pygame.init()
 
 # Configurar a tela
-largura, altura = 1920, 1080  # Tamanho da tela
+largura, altura = 1920, 1080
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("Cyber Defender")
 
@@ -22,12 +23,15 @@ fonte = pygame.font.SysFont(None, 55)
 fonte_pequena = pygame.font.SysFont(None, 35)
 
 # Caminho dos assets
-caminho_assets = "D:/jogo/assets/images"
-caminho_audios = "D:/jogo/audios"
+caminho_assets = os.path.join(os.getcwd(), "assets", "images")
+caminho_audios = os.path.join(os.getcwd(), "assets", "audios")
 
 # Carregar sons
 som_selecao = pygame.mixer.Sound(os.path.join(caminho_audios, "select.wav"))
-som_selecao.set_volume(0.05)  # Ajustar o volume do som para 5%
+som_selecao.set_volume(0.05)
+
+som_fase = pygame.mixer.Sound(os.path.join(caminho_audios, "fase.wav"))
+som_fase.set_volume(0.05)
 
 # Função para carregar imagens e máscaras
 def carregar_imagem(nome, tamanho):
@@ -65,7 +69,7 @@ monitor_altura = int(monitor_altura_original * proporcao_y)
 
 # Variável para armazenar o botão selecionado pelo mouse
 botao_anterior = None
-botao_selecionado = "jogar"  # Iniciar com o botão "play" selecionado
+botao_selecionado = "jogar"
 
 # Função para desenhar texto centralizado
 def desenhar_texto_centralizado(texto, fonte, cor, superficie, x, y):
@@ -83,23 +87,17 @@ def criar_botao(imagem, imagem_sel, mascara, mascara_sel, x_rel, y_rel, acao=Non
     x_absoluto = monitor_x + (monitor_largura - 300) // 2 + x_rel - 10
     y_absoluto = monitor_y + (monitor_altura - 300) // 2 + y_rel
 
-    # Verificar se o mouse está sobre o botão
     mouse_sobre_botao = mascara.overlap(pygame.mask.Mask((1, 1), fill=True), (mouse[0] - x_absoluto, mouse[1] - y_absoluto))
 
-    # Se o mouse estiver sobre o botão, tocar o som e mudar o selecionado
     if mouse_sobre_botao:
         tela.blit(imagem_sel, (x_absoluto, y_absoluto))
         
-        # Tocar som de seleção apenas uma vez ao passar sobre o botão
         if botao_anterior != acao:
             som_selecao.play()
             botao_anterior = acao
         
-        # Atualizar o botão selecionado
         botao_selecionado = acao
         
-        
-        # Se o botão for clicado, retornar a ação correspondente
         if clique[0] == 1 and acao is not None:
             return acao
     else:
@@ -112,17 +110,16 @@ instrucoes_bg, _ = carregar_imagem("main_menu_instrucoes.png", (largura, altura)
 
 # Função para a tela de instruções
 def instrucoes():
-    global botao_selecionado  # Para manter o botão selecionado ao voltar
+    global botao_selecionado
 
     # Criar fonte para o texto
-    fonte_instrucoes = pygame.font.SysFont("Arial", 30)  # Tamanho da fonte
+    fonte_instrucoes = pygame.font.SysFont("Arial", 30)
 
-    # Texto a ser exibido
     texto_instrucoes = (
         "Esse jogo é um projeto educacional voltado para o ensino de conceitos fundamentais "
         "de ciência da computação, com foco específico em ciberataques, suas prevenções e "
         "funcionamento. O projeto busca conscientizar os jogadores sobre as ameaças digitais "
-        "crescentes, como malware, phishing, ransomware e ataques DDoS, que podem comprometer "
+        "crescentes, como phishing, ransomware e ataques DDoS, que podem comprometer "
         "a segurança de dispositivos e sistemas. Além de expor os principais tipos de ataques, "
         "o jogo ensina estratégias de prevenção, como o uso de firewalls, antivírus, criptografia "
         "e, principalmente, a conscientização do usuário."
@@ -135,47 +132,57 @@ def instrucoes():
                 sys.exit()
 
         tela.fill(PRETO)
-        tela.blit(instrucoes_bg, (0, 0))  # Substitui o fundo pela imagem de instruções
+        tela.blit(instrucoes_bg, (0, 0))
 
-        # Definir as dimensões do retângulo
         largura_retangulo = 1200
         altura_retangulo = 300
 
-        y_retangulo = (altura - altura_retangulo + 500) // 2  # Centralizar na altura
+        y_retangulo = (altura - altura_retangulo + 500) // 2
 
-        # Quebrar o texto em linhas que cabem no retângulo
         linhas = []
         palavras = texto_instrucoes.split(' ')
         linha_atual = ""
 
         for palavra in palavras:
-            # Adiciona a palavra atual à linha
             linha_teste = linha_atual + palavra + ' '
             texto_renderizado = fonte_instrucoes.render(linha_teste, True,PRETO)
-            if texto_renderizado.get_width() <= largura_retangulo - 20:  # Considera 20px de margem
+            if texto_renderizado.get_width() <= largura_retangulo - 20:
                 linha_atual = linha_teste
             else:
-                # Se ultrapassar a largura, armazena a linha atual e inicia uma nova
                 linhas.append(linha_atual)
                 linha_atual = palavra + ' '
 
-        # Adiciona a última linha se não estiver vazia
         if linha_atual:
             linhas.append(linha_atual)
 
-        # Desenhar cada linha do texto dentro do retângulo
         for i, linha in enumerate(linhas):
             texto_renderizado = fonte_instrucoes.render(linha, True, PRETO)
             textorect = texto_renderizado.get_rect(center=(largura // 2, y_retangulo + 50 + (i * 35)))  # Centralizar
             tela.blit(texto_renderizado, textorect)
 
-        # Botão voltar centralizado na parte inferior do retângulo
         if criar_botao(botao_voltar, botao_voltar_sel, mascara_voltar, mascara_voltar_sel, 0, 430, acao="voltar"):
             tela_inicial()
 
-        # Atualizar a tela
         pygame.display.flip()
         relógio.tick(30)
+
+def mostrar_transicao_com_fade(tela, texto, duracao=3000, fps=60):
+    som_fase.play()
+    clock = pygame.time.Clock()
+    fonte = pygame.font.SysFont("arial", 50)
+    mensagem = fonte.render(texto, True, (255, 255, 255))
+    mensagem_rect = mensagem.get_rect(center=(tela.get_width() // 2, tela.get_height() // 2))
+
+    fade_surface = pygame.Surface(tela.get_size())
+    fade_surface.fill((0, 0, 0))
+
+    for alpha in range(255, -1, -int(255 / (fps * (duracao / 2000)))):
+        tela.fill((0, 0, 0))
+        tela.blit(mensagem, mensagem_rect)
+        fade_surface.set_alpha(alpha)
+        tela.blit(fade_surface, (0, 0))
+        pygame.display.flip()
+        clock.tick(fps)
         
 # Tela Inicial
 def tela_inicial():
@@ -188,13 +195,17 @@ def tela_inicial():
         tela.fill(PRETO)
         tela.blit(background, (0, 0))
         
-        # Criar os botões e verificar seleção
         if criar_botao(botao_play, botao_play_sel, mascara_play, mascara_play_sel, 0, 0, acao="jogar"):
             try:
-                # Chama a fase 1 e armazena o resultado
+                mostrar_transicao_com_fade(tela, "Fase 1 - Phishing")
                 fase1_concluida, personagem = fase1()
-                if fase1_concluida:  # Se fase 1 for concluída com sucesso
-                    fase2(personagem)  # Inicia a fase 2
+                if fase1_concluida:
+                    mostrar_transicao_com_fade(tela, "Fase 2 - Ransomware")
+                    fase2_concluida, personagem = fase2(personagem)
+                if fase2_concluida:
+                    mostrar_transicao_com_fade(tela, "Fase 3 - DDoS")
+                    fase3(personagem)
+                    
             except Exception as e:
                 print(f"Ocorreu um erro: {e}")
                 tela_inicial()
@@ -206,7 +217,6 @@ def tela_inicial():
             pygame.quit()
             sys.exit()
 
-        # Desenhar "select.png" no botão atualmente selecionado, se o mouse não estiver sobre nenhum
         if botao_selecionado == "jogar":
             tela.blit(selecao_img, (monitor_x + (monitor_largura - 300) // 2 - 150, monitor_y + (monitor_altura - 300) // 2 + 20))
         elif botao_selecionado == "instrucoes":

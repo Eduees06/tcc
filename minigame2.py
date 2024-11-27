@@ -5,10 +5,6 @@ from personagem import *
 from config import LARGURA_TELA, ALTURA_TELA, TAMANHO_PERSONAGEM
 from utils import *
 
-# Configurações de caminho
-caminho_assets = "D:/jogo/assets/images"
-CAMINHO_AUDIO = "D:\\jogo\\audios\\"
-
 # Função para verificar se uma posição é acessível a partir de outra
 def posicao_acessivel(labirinto, pos_inicial, pos_alvo, pos_backup):
     largura = len(labirinto[0])
@@ -91,7 +87,7 @@ def gerar_labirinto(largura, altura, pos_inicial, distancia_minima, arquivos_res
 
 # Dicionário com os arquivos e seus anagramas
 arquivos = {
-    "phishing.txt": "NIGPHISH",         # Anagrama de phishing
+    "phishing.txt": "INGPHISH",         # Anagrama de phishing
     "ddos.txt": "SODD",                 # Anagrama de ddos
     "hacker.txt": "KEARCH",             # Anagrama de hacker
     "malware.txt": "WALMERA",           # Anagrama de malware
@@ -104,7 +100,6 @@ arquivos = {
 # Função para exibir a tela de anagramas
 def mostrar_tela_anagrama(tela, monitor_rect, anagrama, arquivo_nome, personagem):
     # Carregar a imagem de fundo
-    caminho_assets = "D:/jogo/assets/images"
     imagem_fundo_original = pygame.image.load(f"{caminho_assets}/hackerbackground.png").convert()
 
     # Escalonar a imagem de fundo para o tamanho do monitor
@@ -312,10 +307,10 @@ def obter_dica(arquivo_nome):
         
 # Função principal do minigame
 def minigamefase2(tela, personagem, concluido, completou_todos):
-    som_game_over = pygame.mixer.Sound(CAMINHO_AUDIO + "game_over.wav")
+    som_game_over = pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "game_over.wav"))
     largura_nova, altura_nova = 1000, 1000
     imagem_parede_original = pygame.image.load(os.path.join(caminho_assets, "caminho_labirinto.png")).convert_alpha()
-    som_vitoria = pygame.mixer.Sound(CAMINHO_AUDIO + "victory.wav")
+    som_vitoria = pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "victory.wav"))
     som_vitoria.set_volume(0.2)
     imagem_personagem_original = pygame.image.load(os.path.join(caminho_assets, "personagem.png")).convert_alpha()
     imagem_personagem = imagem_personagem_original

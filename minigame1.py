@@ -6,8 +6,8 @@ from config import LARGURA_TELA, ALTURA_TELA, TAMANHO_PERSONAGEM
 from utils import *
 
 def minigamefase1(tela, personagem, concluido):
-    som_game_over = pygame.mixer.Sound(CAMINHO_AUDIO + "game_over.wav")
-    som_vitoria = pygame.mixer.Sound(CAMINHO_AUDIO + "victory.wav")
+    som_game_over = pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "game_over.wav"))
+    som_vitoria = pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "victory.wav"))
     som_vitoria.set_volume(0.2)
     email_valido = pygame.image.load(os.path.join(caminho_assets, 'emails.png')).convert_alpha()
     largura_nova, altura_nova = 1000, 1000
@@ -15,8 +15,8 @@ def minigamefase1(tela, personagem, concluido):
 
     # Carregar emails
     for i in range(1, 6):
-        emails.append((pygame.image.load(os.path.join("D:/jogo/assets/images", f"emailfalso{i}.png")).convert_alpha(), "falso"))
-        emails.append((pygame.image.load(os.path.join("D:/jogo/assets/images", f"emailverdadeiro{i}.png")).convert_alpha(), "verdadeiro"))
+        emails.append((pygame.image.load(os.path.join(caminho_assets, f"emailfalso{i}.png")).convert_alpha(), "falso"))
+        emails.append((pygame.image.load(os.path.join(caminho_assets, f"emailverdadeiro{i}.png")).convert_alpha(), "verdadeiro"))
 
     random.shuffle(emails)
 

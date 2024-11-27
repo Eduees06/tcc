@@ -1,9 +1,17 @@
 import pygame
+import os
+import sys
 
-import pygame
-
-# Define o caminho para os áudios
-CAMINHO_AUDIO = "D:\\jogo\\audios\\"
+if getattr(sys, 'frozen', False):
+    # Caminhos no ambiente do executável
+    CAMINHO_AUDIO = os.path.join(sys._MEIPASS, "assets", "audios")
+    CAMINHO_FONTES = os.path.join(sys._MEIPASS, "assets", "fontes")
+    caminho_assets = os.path.join(sys._MEIPASS, "assets", "images")
+else:
+    # Caminhos durante o desenvolvimento
+    CAMINHO_AUDIO = os.path.join(os.getcwd(), "assets", "audios")
+    CAMINHO_FONTES = os.path.join(os.getcwd(), "assets", "fontes")
+    caminho_assets = os.path.join(os.getcwd(), "assets", "images")
 
 class Personagem:
     def __init__(self, vidas=5, dinheiro=0):
@@ -11,9 +19,9 @@ class Personagem:
         pygame.mixer.init()
         
         # Carrega os sons
-        self.som_perder_vida = pygame.mixer.Sound(CAMINHO_AUDIO + "perder_vida.wav")
-        self.som_gastar_dinheiro = pygame.mixer.Sound(CAMINHO_AUDIO + "gastar_dinheiro.mp3")
-        self.som_ganhar_dinheiro = pygame.mixer.Sound(CAMINHO_AUDIO + "ganhar_dinheiro.wav")
+        self.som_perder_vida = pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "perder_vida.wav"))
+        self.som_gastar_dinheiro = pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "gastar_dinheiro.mp3"))
+        self.som_ganhar_dinheiro = pygame.mixer.Sound(os.path.join(CAMINHO_AUDIO, "ganhar_dinheiro.wav"))
 
         self.vidas = vidas
         self.dinheiro = dinheiro
