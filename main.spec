@@ -10,7 +10,7 @@ a = Analysis(
         ('assets/audios', 'assets/audios'),
         ('assets/fontes', 'assets/fontes'),
     ],
-    hiddenimports=[],
+    hiddenimports=['pygame'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
