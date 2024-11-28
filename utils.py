@@ -7,12 +7,14 @@ from personagem import *
 pygame.init()
 
 # Caminho dos assets
-caminho_assets = os.path.join(os.getcwd(), "assets", "images")
-caminho_fonte = os.path.join(os.getcwd(), "assets", "fontes", "Early GameBoy.ttf")
-fonte_personalizada = pygame.font.Font(caminho_fonte, 35)
-
 # Verifica se o código está sendo executado a partir do executável
 
+if getattr(sys, 'frozen', False):
+    print("Executável rodando com arquivos em:", sys._MEIPASS)
+else:
+    print("Executando no ambiente de desenvolvimento.")
+    
+    
 if getattr(sys, 'frozen', False):
     # Caminhos no ambiente do executável
     CAMINHO_AUDIO = os.path.join(sys._MEIPASS, "assets", "audios")
@@ -24,6 +26,8 @@ else:
     CAMINHO_FONTES = os.path.join(os.getcwd(), "assets", "fontes")
     caminho_assets = os.path.join(os.getcwd(), "assets", "images")
     
+fonte_personalizada = pygame.font.Font(os.path.join(CAMINHO_FONTES, "Early GameBoy.ttf"), 35)
+
 def calcular_escala(largura_tela):
     if largura_tela == 1280:
         return largura_tela // 13

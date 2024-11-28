@@ -7,10 +7,19 @@ from fase3 import fase3
 from personagem import *
 pygame.init()
 
-# Configurar a tela
-largura, altura = 1920, 1080
-tela = pygame.display.set_mode((largura, altura))
-pygame.display.set_caption("Cyber Defender")
+# Obter a resolução do monitor
+info_tela = pygame.display.Info()
+largura_monitor = info_tela.current_w
+altura_monitor = info_tela.current_h
+
+# Resolução nativa do jogo (1920x1080)
+largura_jogo, altura_jogo = 1920, 1080
+
+# Criar a janela com a resolução ajustada (se necessário)
+tela = pygame.display.set_mode((largura_monitor, altura_monitor))  # Modo janela
+
+largura = largura_monitor
+altura = altura_monitor
 
 relógio = pygame.time.Clock()
 
@@ -22,10 +31,17 @@ PRETO = (0, 0, 0)
 fonte = pygame.font.SysFont(None, 55)
 fonte_pequena = pygame.font.SysFont(None, 35)
 
-# Caminho dos assets
-caminho_assets = os.path.join(os.getcwd(), "assets", "images")
-caminho_audios = os.path.join(os.getcwd(), "assets", "audios")
-
+if getattr(sys, 'frozen', False):
+    # Caminhos no ambiente do executável
+    caminho_audios = os.path.join(sys._MEIPASS, "assets", "audios")
+    CAMINHO_FONTES = os.path.join(sys._MEIPASS, "assets", "fontes")
+    caminho_assets = os.path.join(sys._MEIPASS, "assets", "images")
+else:
+    # Caminhos durante o desenvolvimento
+    caminho_audios = os.path.join(os.getcwd(), "assets", "audios")
+    CAMINHO_FONTES = os.path.join(os.getcwd(), "assets", "fontes")
+    caminho_assets = os.path.join(os.getcwd(), "assets", "images")
+    
 # Carregar sons
 som_selecao = pygame.mixer.Sound(os.path.join(caminho_audios, "select.wav"))
 som_selecao.set_volume(0.05)

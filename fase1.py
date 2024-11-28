@@ -17,11 +17,31 @@ fonte_dialogo = pygame.font.SysFont('Arial', 35)
 
 def inicializar_jogo():
     pygame.init()
-    tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
-    pygame.display.set_caption("Fase 1 - Cyber Defender")
-    relogio = pygame.time.Clock()
-    return tela, relogio
 
+    # Obter a resolução do monitor
+    info_tela = pygame.display.Info()
+    largura_monitor = info_tela.current_w
+    altura_monitor = info_tela.current_h
+
+    # Resolução nativa do jogo (1920x1080)
+    largura_jogo, altura_jogo = 1920, 1080
+
+    # Verificar se a resolução do monitor é menor que a resolução nativa do jogo
+    if largura_monitor < largura_jogo or altura_monitor < altura_jogo:
+        # Ajustar a resolução do jogo para o monitor se for menor que a resolução nativa
+        largura_jogo = largura_monitor * 0.9  # Ajuste proporcional para 90% do tamanho do monitor
+        altura_jogo = altura_monitor * 0.9    # Ajuste proporcional para 90% do tamanho do monitor
+
+    # Criar a janela com a resolução ajustada
+    tela = pygame.display.set_mode((int(largura_monitor), int(altura_monitor)))  # Modo janela
+
+    # Definir o título da janela
+    pygame.display.set_caption("Cyber Defender")
+
+    # Definir o relógio para controlar a taxa de atualização
+    relogio = pygame.time.Clock()
+
+    return tela, relogio
 def inicializar_figurantes(posicoes, animações, tamanhos):
     figurantes = {}
     rects_figurantes = {}
